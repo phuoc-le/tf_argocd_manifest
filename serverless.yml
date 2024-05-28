@@ -1,0 +1,16 @@
+service: aws-node-rest-api
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  lambdaHashingVersion: '20240410'
+
+functions:
+  hello:
+    handler: index.hello
+    events:
+      - http:
+          path: /
+          method: get

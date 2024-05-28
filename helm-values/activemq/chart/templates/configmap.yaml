@@ -1,0 +1,34 @@
+apiVersion: v1
+data:
+  ACTIVEMQ: 'activemq'
+  ACTIVEMQ_ADMIN_LOGIN: 'admin'
+  ACTIVEMQ_ADMIN_PASSWORD: 'admin'
+  ACTIVEMQ_FRAME_SIZE: '200'
+  ACTIVEMQ_MAX_MEMORY: '4096'
+  ACTIVEMQ_MIN_MEMORY: '512'
+  ACTIVEMQ_NAME: 'localhost'
+  healthcheck.sh: >-
+    #!/bin/bash
+
+    # Check health status
+
+    echo $(curl -u admin:admin -s
+    http://0.0.0.0:8161/api/jolokia/exec/org.apache.activemq:type=Broker,brokerName=localhost,service=Health/healthStatus)
+    > /tmp/health.txt
+
+    if grep -qzw "Good" /tmp/health.txt
+    then
+       echo "INFO: ActiveMQ up and running."
+       exit 0
+       # Killing the process
+       # systemd should restart the process as I have the property restart=Always
+       # if not make sure to start the process again
+    else
+       echo "WARNING: ActiveMQ is Not Good"
+       exit 1
+    fi
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-conf
+  labels:
+      {{- include "activemq.labels" . | nindent 4 }}

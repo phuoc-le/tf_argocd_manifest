@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mariadb
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: mariadb
+    repoURL: registry-1.docker.io/bitnamicharts  # note: the oci:// syntax is not included.
+    targetRevision: 18.2.0
+    helm:
+      parameters:
+        - name: "fullnameOverride"
+          value: "mariadb"
+        - name: "image.tag"
+          value: '11.3.2'
+        - name: "auth.rootPassword"
+          value: "123456"
+          forceString: true
+        - name: "auth.username"
+          value: "superuser"
+        - name: "auth.password"
+          value: "123456"
+          forceString: true
+        - name: "auth.database"
+          value: "wordpress"
+        - name: "primary.persistence.size"
+          value: 1Gi
+        - name: "readReplicas.persistence.size"
+          value: 1Gi
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default

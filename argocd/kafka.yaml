@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kafka
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: kafka
+    repoURL: registry-1.docker.io/bitnamicharts  # note: the oci:// syntax is not included.
+    targetRevision: 29.0.3
+    helm:
+      parameters:
+        - name: "controller.replicaCount"
+          value: "1"
+        - name: "controller.persistence.size"
+          value: "1Gi"
+        - name: "broker.replicaCount"
+          value: "1"
+        - name: "broker.persistence.size"
+          value: "1Gi"
+        - name: "zookeeper.persistence.size"
+          value: "500Mi"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default

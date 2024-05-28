@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pgadmin4
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: pgadmin4
+    repoURL: https://helm.runix.net  # note: the oci:// syntax is not included.
+    targetRevision: 1.25.3
+    helm:
+      parameters:
+        - name: "env.email"
+          value: "admin@phucninh.pro"
+          forceString: true
+        - name: "env.password"
+          value: "123456"
+          forceString: true
+        - name: "persistentVolume.size"
+          value: "1Gi"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default

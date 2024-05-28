@@ -1,0 +1,45 @@
+pipeline {
+    agent none
+    parameters {
+        string(name: 'BRANCH', defaultValue: 'master', description: '', trim: true)
+    }
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '5'))
+        disableResume()
+    }
+    environment {
+        BUILD_ENV = "demo"
+        AWS_DEFAULT_REGION = 'us-east-1'
+        AWS_DEV_CRED_ID = 'aws-credentials'
+        CREDENTIALS_ID = 'github-credentials'
+        BRANCH = "$params.BRANCH"
+        GIT_REPO_URL = 'https://github.com/phuoc-le/interview_tf_api_demo.git'
+    }
+
+    stages {
+        stage('Checkout') {
+            agent { label 'deploy' }
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "$BRANCH"]],
+                    userRemoteConfigs: [[credentialsId: "$CREDENTIALS_ID", url: "$GIT_REPO_URL"]]
+                ])
+            }
+        }
+        stage('Install Dependencies') {
+            agent { label 'deploy' }
+            steps {
+                    sh 'npm install -g npm serverless'
+                }
+        }
+        stage('Deployment') {
+            agent { label 'deploy' }
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
+                    sh "export SLS_DEBUG=* && serverless deploy -r $AWS_DEFAULT_REGION --stage $BUILD_ENV"
+                }
+            }
+        }
+    }
+}

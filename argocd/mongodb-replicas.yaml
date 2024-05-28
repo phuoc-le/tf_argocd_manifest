@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mongodb-replicaset
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: mongodb
+    repoURL: registry-1.docker.io/bitnamicharts  # note: the oci:// syntax is not included.
+    targetRevision: 15.6.0
+    helm:
+      parameters:
+        - name: "fullnameOverride"
+          value: "mongodb-replicaset"
+        - name: "architecture"
+          value: 'replicaset'
+        - name: "useStatefulSet"
+          value: 'true'
+        - name: "image.tag"
+          value: '7.0.9'
+        - name: "auth.rootPassword"
+          value: "123456"
+          forceString: true
+        - name: "auth.usernames[0]"
+          value: "superuser"
+        - name: "auth.passwords[0]"
+          value: "123456"
+          forceString: true
+        - name: "auth.databases[0]"
+          value: "test"
+        - name: "persistence.size"
+          value: "1Gi"
+        - name: "service.type"
+          value: "ClusterIP"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
