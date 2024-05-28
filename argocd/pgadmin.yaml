@@ -15,7 +15,7 @@ spec:
           value: "admin@phucninh.pro"
           forceString: true
         - name: "env.password"
-          value: "123456"
+          value: "LHPkttlhp123"
           forceString: true
         - name: "persistentVolume.size"
           value: "1Gi"
