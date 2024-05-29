@@ -1,8 +1,6 @@
 apiVersion: v1
 data:
   ACTIVEMQ: 'activemq'
-  ACTIVEMQ_ADMIN_LOGIN: 'admin'
-  ACTIVEMQ_ADMIN_PASSWORD: 'admin'
   ACTIVEMQ_FRAME_SIZE: '200'
   ACTIVEMQ_MAX_MEMORY: '4096'
   ACTIVEMQ_MIN_MEMORY: '512'
@@ -29,6 +27,6 @@ data:
     fi
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-conf
+  name: {{ include "chart.fullname" . }}
   labels:
       {{- include "activemq.labels" . | nindent 4 }}

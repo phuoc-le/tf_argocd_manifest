@@ -25,7 +25,9 @@ spec:
         {{- end }}
           envFrom:
             - configMapRef:
-                name: {{ .Release.Name }}-conf
+                name: {{ .Release.Name }}
+            - secretRef:
+                name: {{ .Release.Name }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           name: {{ .Release.Name }}

@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: activemq
+  namespace: argocd
+spec:
+  destination:
+    namespace: default
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: helm-values/activemq/chart
+    repoURL: https://github.com/phuoc-le/tf_argocd_manifest.git
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
