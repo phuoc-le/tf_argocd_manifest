@@ -15,6 +15,15 @@ spec:
           value: "2Gi"
         - name: "controller.image.tag"
           value: "latest-jdk17"
+        - name: "controller.jenkinsAdminEmail"
+          value: "admin@phucninh.pro"
+        - name: "controller.jenkinsUrl"
+          value: "https://jenkins.phucninh.pro/"
+        - name: "controller.admin.username"
+          value: "admin"
+        - name: "controller.admin.password"
+          value: "123456"
+          forceString: true
   destination:
     server: https://kubernetes.default.svc
     namespace: default
