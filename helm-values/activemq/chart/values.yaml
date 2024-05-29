@@ -5,9 +5,9 @@
 replicaCount: 1
 
 image:
-  repository: "docker-registry.jienie.com/infras/activemq"
+  repository: "phuoc/activemq"
   # override image tag, which is .Chart.AppVersion by default
-  tag: "5.17.6"
+  tag: "5.18.2"
   pullPolicy: "IfNotPresent"
 
 imagePullSecrets: []
@@ -110,4 +110,4 @@ persistence:
 
 environment:
   ACTIVEMQ_CONFIG_DIR: /opt/activemq/conf
-  ACTIVEMQ_VERSION: 5.17.6
+  ACTIVEMQ_VERSION: 5.18.2
