@@ -73,7 +73,7 @@ spec:
           name: logs
         - configMap:
             defaultMode: 493
-            name: {{ .Release.Name }}-conf
+            name: {{ .Release.Name }}
           name: conf
   updateStrategy:
     type: {{ .Values.updateStrategy }}
