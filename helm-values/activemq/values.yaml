@@ -111,3 +111,7 @@ persistence:
 environment:
   ACTIVEMQ_CONFIG_DIR: /opt/activemq/conf
   ACTIVEMQ_VERSION: 5.18.2
+  
+admin:
+  username: admin
+  password: 123456
