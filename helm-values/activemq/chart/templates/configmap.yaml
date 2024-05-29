@@ -27,6 +27,6 @@ data:
     fi
 kind: ConfigMap
 metadata:
-  name: {{ include "chart.fullname" . }}
+  name: {{ .Release.Name }}
   labels:
       {{- include "activemq.labels" . | nindent 4 }}
