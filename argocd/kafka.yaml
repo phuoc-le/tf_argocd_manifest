@@ -11,6 +11,21 @@ spec:
     targetRevision: 29.0.3
     helm:
       parameters:
+        - name: "sasl.interbroker.password"
+          value: "123456"
+          forceString: true
+        - name: "sasl.controller.password"
+          value: "123456"
+          forceString: true
+        - name: "sasl.client.passwords"
+          value: "123456"
+          forceString: true
+        - name: "sasl.zookeeper.user"
+          value: "kafka"
+          forceString: true
+        - name: "sasl.zookeeper.password"
+          value: "123456"
+          forceString: true
         - name: "controller.replicaCount"
           value: "1"
         - name: "controller.persistence.size"

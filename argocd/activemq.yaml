@@ -13,5 +13,10 @@ spec:
     repoURL: https://github.com/phuoc-le/tf_argocd_manifest.git
     targetRevision: HEAD
     helm:
-      valueFiles:
-        - values.yaml
+      parameters:
+        - name: "admin.username"
+          value: "admin"
+          forceString: true
+        - name: "admin.password"
+          value: "123456"
+          forceString: true

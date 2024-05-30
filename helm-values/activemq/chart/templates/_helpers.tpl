@@ -86,3 +86,11 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{ define "activemq.authentication" }}
+    {{- if .Values.admin }}
+    {{- printf "%s:%s" .Values.admin.username .Values.admin.password -}}
+    {{- else }}
+    {{- print "admin:admin" }}
+    {{- end }}
+{{- end }}

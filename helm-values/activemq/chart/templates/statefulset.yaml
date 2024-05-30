@@ -42,37 +42,37 @@ spec:
           securityContext:
             {{- toYaml .Values.podSecurityContext | nindent 12 }}
           startupProbe:
-            exec:
-              command:
-                - /bin/sh
-                - '-c'
-                - >-
-                  /opt/activemq/bin/activemq query --objname
-                  type=Broker,brokerName=*,service=Health | grep Good
+            httpGet:
+              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName=localhost,service=Health
+              port: server-activemq
+              scheme: HTTP
+              httpHeaders:
+                - name: Authorization
+                  value: Basic {{ include "activemq.authentication" . | b64enc }}
             timeoutSeconds: 30
             periodSeconds: 10
             successThreshold: 1
             failureThreshold: 30
           livenessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - '-c'
-                - >-
-                  /opt/activemq/bin/activemq query --objname
-                  type=Broker,brokerName=*,service=Health | grep Good
+            httpGet:
+              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName=localhost,service=Health
+              port: server-activemq
+              scheme: HTTP
+              httpHeaders:
+                - name: Authorization
+                  value: Basic {{ include "activemq.authentication" . | b64enc }}
             timeoutSeconds: 10
             periodSeconds: 10
             successThreshold: 1
             failureThreshold: 5
           readinessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - '-c'
-                - >-
-                  /opt/activemq/bin/activemq query --objname
-                  type=Broker,brokerName=*,service=Health | grep Good
+            httpGet:
+              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName=localhost,service=Health
+              port: server-activemq
+              scheme: HTTP
+              httpHeaders:
+                - name: Authorization
+                  value: Basic {{ include "activemq.authentication" . | b64enc }}
             timeoutSeconds: 10
             periodSeconds: 10
             successThreshold: 1
