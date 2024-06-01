@@ -1,7 +1,7 @@
 #!/bin/sh
 
-activemq_webadmin_username="${ACTIVEMQ_ADMIN_USERNAME:-admin}"
-activemq_webadmin_pw="${ACTIVEMQ_ADMIN_PASSWORD:-admin}"
+activemq_webadmin_username="admin"
+activemq_webadmin_pw="admin"
 
 ## Modify jetty.xml
 
