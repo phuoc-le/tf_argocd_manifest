@@ -20,10 +20,7 @@ spec:
         - name: "sasl.client.passwords"
           value: "123456"
           forceString: true
-        - name: "sasl.zookeeper.user"
-          value: "kafka"
-          forceString: true
-        - name: "sasl.zookeeper.password"
+        - name: "kraft.clusterId"
           value: "123456"
           forceString: true
         - name: "controller.replicaCount"
@@ -34,8 +31,6 @@ spec:
           value: "1"
         - name: "broker.persistence.size"
           value: "1Gi"
-        - name: "zookeeper.persistence.size"
-          value: "500Mi"
   destination:
     server: https://kubernetes.default.svc
     namespace: default

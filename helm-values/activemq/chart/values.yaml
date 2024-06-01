@@ -114,4 +114,4 @@ environment:
 
 admin:
   username: admin
-  password: admin
+  password: "123456"
