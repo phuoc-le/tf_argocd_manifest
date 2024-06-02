@@ -15,7 +15,7 @@ spec:
     helm:
       parameters:
         - name: "image.pullPolicy"
-          value: "Always"
+          value: "IfNotPresent"
         - name: "image.tag"
           value: "5.18.2"
         - name: "admin.username"
