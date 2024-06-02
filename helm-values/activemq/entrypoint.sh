@@ -52,12 +52,13 @@ fi
 
 if [ -n "$ACTIVEMQ_BROKER_NAME" ]; then
   activemq_broker_name="$ACTIVEMQ_BROKER_NAME"
+  sed -i "s#localhost#$activemq_broker_name#" conf/activemq.xml
 fi
 
 if [ "$ACTIVEMQ_ENABLE_SCHEDULER" = "true" ]; then
 
   echo "Enabling the scheduler"
-  sed -i "s#<broker xmlns=http://activemq.apache.org/schema/core brokerName=$activemq_broker_name dataDirectory=${activemq.data}>#<broker xmlns=http://activemq.apache.org/schema/core brokerName=$activemq_broker_name dataDirectory=${activemq.data} schedulerSupport=true>#" conf/activemq.xml
+  sed -i 's#<broker xmlns="http://activemq.apache.org/schema/core" brokerName="$activemq_broker_name" dataDirectory="${activemq.data}">#<broker xmlns="http://activemq.apache.org/schema/core" brokerName="$activemq_broker_name" dataDirectory="${activemq.data}" schedulerSupport="true">#' conf/activemq.xml
 fi
 
 # Start

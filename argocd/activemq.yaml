@@ -14,9 +14,16 @@ spec:
     targetRevision: HEAD
     helm:
       parameters:
+        - name: "image.pullPolicy"
+          value: "Always"
+        - name: "image.tag"
+          value: "5.18.2"
         - name: "admin.username"
           value: "admin"
           forceString: true
         - name: "admin.password"
           value: "123456"
+          forceString: true
+        - name: "environment.ACTIVEMQ_BROKER_NAME"
+          value: "broker-1"
           forceString: true

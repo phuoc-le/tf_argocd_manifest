@@ -7,7 +7,8 @@ replicaCount: 1
 image:
   repository: "phuoc/activemq"
   # override image tag, which is .Chart.AppVersion by default
-  tag: "5.18.2-1"
+  tag: "5.18.2"
+  # pull image policy: "IfNotPresent" or "Always"
   pullPolicy: "IfNotPresent"
 
 imagePullSecrets: []
