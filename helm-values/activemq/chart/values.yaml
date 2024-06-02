@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: "phuoc/activemq"
   # override image tag, which is .Chart.AppVersion by default
-  tag: "5.18.2"
+  tag: "5.18.2-1"
   pullPolicy: "IfNotPresent"
 
 imagePullSecrets: []
@@ -111,6 +111,7 @@ persistence:
 environment:
   ACTIVEMQ_CONFIG_DIR: /opt/activemq/conf
   ACTIVEMQ_VERSION: 5.18.2
+  ACTIVEMQ_BROKER_NAME: 'localhost'
 
 admin:
   username: admin

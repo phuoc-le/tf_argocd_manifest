@@ -43,7 +43,7 @@ spec:
             {{- toYaml .Values.podSecurityContext | nindent 12 }}
           startupProbe:
             httpGet:
-              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName=localhost,service=Health
+              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName={{ .Values.environment.ACTIVEMQ_BROKER_NAME }},service=Health
               port: server-activemq
               scheme: HTTP
               httpHeaders:
@@ -55,7 +55,7 @@ spec:
             failureThreshold: 30
           livenessProbe:
             httpGet:
-              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName=localhost,service=Health
+              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName={{ .Values.environment.ACTIVEMQ_BROKER_NAME }},service=Health
               port: server-activemq
               scheme: HTTP
               httpHeaders:
@@ -67,7 +67,7 @@ spec:
             failureThreshold: 5
           readinessProbe:
             httpGet:
-              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName=localhost,service=Health
+              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName={{ .Values.environment.ACTIVEMQ_BROKER_NAME }},service=Health
               port: server-activemq
               scheme: HTTP
               httpHeaders:
@@ -107,10 +107,6 @@ spec:
       volumes:
         - emptyDir: {}
           name: logs
-        - configMap:
-            defaultMode: 493
-            name: {{ .Release.Name }}
-          name: conf
   updateStrategy:
     type: {{ .Values.updateStrategy }}
   {{- if .Values.persistence.enabled }}

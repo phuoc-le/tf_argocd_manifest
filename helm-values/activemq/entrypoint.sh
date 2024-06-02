@@ -2,6 +2,7 @@
 
 activemq_webadmin_username="admin"
 activemq_webadmin_pw="admin"
+activemq_broker_name="localhost"
 
 ## Modify jetty.xml
 
@@ -49,9 +50,14 @@ fi
 
 ## Modify activemq.xml
 
+if [ -n "$ACTIVEMQ_BROKER_NAME" ]; then
+  activemq_broker_name="$ACTIVEMQ_BROKER_NAME"
+fi
+
 if [ "$ACTIVEMQ_ENABLE_SCHEDULER" = "true" ]; then
+
   echo "Enabling the scheduler"
-  sed -i 's#<broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="${activemq.data}">#<broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="${activemq.data}" schedulerSupport="true">#' conf/activemq.xml
+  sed -i "s#<broker xmlns=http://activemq.apache.org/schema/core brokerName=$activemq_broker_name dataDirectory=${activemq.data}>#<broker xmlns=http://activemq.apache.org/schema/core brokerName=$activemq_broker_name dataDirectory=${activemq.data} schedulerSupport=true>#" conf/activemq.xml
 fi
 
 # Start
