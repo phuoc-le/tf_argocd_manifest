@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: activemq-classic
+  namespace: argocd
+spec:
+  destination:
+    namespace: default
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: helm-values/activemq/chart
+    repoURL: https://github.com/phuoc-le/tf_argocd_manifest.git
+    targetRevision: HEAD
+    helm:
+      parameters:
+        - name: "image.repository"
+          value: "apache/activemq-classic"
+        - name: "image.pullPolicy"
+          value: "IfNotPresent"
+        - name: "image.tag"
+          value: "6.1.1"
+        - name: "admin.username"
+          value: "admin"
+          forceString: true
+        - name: "admin.password"
+          value: "123456"
+          forceString: true
+        - name: "environment.ACTIVEMQ_BROKER_NAME"
+          value: "broker-1"
+          forceString: true
