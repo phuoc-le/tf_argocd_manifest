@@ -45,7 +45,7 @@ fi
 
 if [ -n "$ACTIVEMQ_WEBADMIN_USERNAME"  ] || [ -n "$ACTIVEMQ_WEBADMIN_PASSWORD" ]; then
   echo "Setting activemq WebConsole $has_modified_webadmin_username $has_modified_webadmin_pw"
-  sed -i "s#admin: admin, admin#$activemq_webadmin_username: $activemq_webadmin_pw, admin#" conf/jetty-realm.properties
+  sed -i "s#admin=admin#$activemq_webadmin_username=$activemq_webadmin_pw#" conf/users.properties
 fi
 
 ## Modify activemq.xml
