@@ -110,7 +110,6 @@ persistence:
   annotations: {}
 
 environment:
-  ACTIVEMQ_CONFIG_DIR: /opt/activemq/conf
   ACTIVEMQ_BROKER_NAME: 'localhost'
 
 admin:

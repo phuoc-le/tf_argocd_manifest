@@ -9,7 +9,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: helm-values/activemq/chart
+    path: helm-values/activemq-classic/chart
     repoURL: https://github.com/phuoc-le/tf_argocd_manifest.git
     targetRevision: HEAD
     helm:
