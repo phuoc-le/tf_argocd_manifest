@@ -29,7 +29,7 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext:
-  allowPrivilegeEscalation: false
+  allowPrivilegeEscalation: true
   capabilities: {}
   privileged: true
   readOnlyRootFilesystem: false
