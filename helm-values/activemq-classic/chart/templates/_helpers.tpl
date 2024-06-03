@@ -97,8 +97,8 @@ Create the name of the service account to use
 
 {{ define "activemq.user-conf" }}
     {{- if .Values.admin }}
-    {{- printf "%s-%s" .Values.admin.username .Values.admin.password -}}
+    {{- printf "%s=%s" .Values.admin.username .Values.admin.password -}}
     {{- else }}
-    {{- print "admin-admin" }}
+    {{- print "admin=admin" }}
     {{- end }}
 {{- end }}
