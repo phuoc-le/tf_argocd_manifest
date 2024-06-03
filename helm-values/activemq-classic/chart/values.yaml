@@ -29,13 +29,17 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext:
-  allowPrivilegeEscalation: true
-  capabilities: { }
+  allowPrivilegeEscalation: false
+  capabilities: {}
   privileged: true
   readOnlyRootFilesystem: false
   runAsUser: 0
+  runAsGroup: 0
 
-securityContext: {}
+securityContext:
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 0
 
 service:
   type: ClusterIP
