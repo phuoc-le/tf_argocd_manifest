@@ -82,6 +82,9 @@ spec:
               name: logs
             - mountPath: /opt/activemq/data
               name: "{{ template "activemq.uname" . }}"
+            - mountPath: "/opt/apache-activemq/conf/users.properties"
+              name: user-conf
+              subPath: users.properties
       dnsPolicy: ClusterFirst
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -107,6 +110,12 @@ spec:
       volumes:
         - emptyDir: {}
           name: logs
+        - name: user-conf
+          secret:
+            secretName: {{ .Release.Name }}
+            items:
+              - key: users.properties
+                path: users.properties
   updateStrategy:
     type: {{ .Values.updateStrategy }}
   {{- if .Values.persistence.enabled }}
