@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: activemq-classic
+  name: activemq
   namespace: argocd
 spec:
   destination:
@@ -25,7 +25,4 @@ spec:
           forceString: true
         - name: "admin.password"
           value: "123456"
-          forceString: true
-        - name: "environment.ACTIVEMQ_BROKER_NAME"
-          value: "broker-1"
           forceString: true
