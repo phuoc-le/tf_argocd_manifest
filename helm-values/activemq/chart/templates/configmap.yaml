@@ -5,6 +5,7 @@ data:
   ACTIVEMQ_MAX_MEMORY: '4096'
   ACTIVEMQ_MIN_MEMORY: '512'
   ACTIVEMQ_NAME: 'localhost'
+
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}
