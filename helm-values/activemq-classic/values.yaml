@@ -44,18 +44,30 @@ securityContext:
 service:
   type: ClusterIP
   ports:
-    - name: server-activemq
+    - name: web
       port: 8161
       protocol: TCP
       targetPort: 8161
-    - name: core-activemq
+    - name: openwire
       port: 61616
       protocol: TCP
       targetPort: 61616
-    - name: stomp-activemq
+    - name: stomp
       port: 61613
       protocol: TCP
       targetPort: 61613
+    - name: amqp
+      port: 5672
+      protocol: TCP
+      targetPort: 5672
+    - name: ws
+      port: 61614
+      protocol: TCP
+      targetPort: 61614
+    - name: mqtt
+      port: 1883
+      protocol: TCP
+      targetPort: 1883
 
 ingress:
   enabled: false
@@ -75,7 +87,6 @@ resources:
   requests:
     cpu: 50m
     memory: 100Mi
-
 
 autoscaling:
   enabled: false
