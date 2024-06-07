@@ -78,9 +78,9 @@ spec:
             successThreshold: 1
             failureThreshold: 5
           volumeMounts:
-            - mountPath: /var/log/activemq
+            - mountPath: "/var/log/activemq"
               name: logs
-            - mountPath: /opt/activemq/data
+            - mountPath: "/opt/apache-activemq/data"
               name: "{{ template "activemq.uname" . }}"
             - mountPath: "/opt/apache-activemq/conf/users.properties"
               name: user-conf

@@ -117,5 +117,5 @@ environment:
   ACTIVEMQ_BROKER_NAME: 'localhost'
 
 admin:
-  username: admin
+  username: "admin"
   password: "123456"
