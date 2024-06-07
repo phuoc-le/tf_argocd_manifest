@@ -16,18 +16,18 @@ spec:
         {{- include "activemq.labels" . | nindent 8}}
     spec:
       containers:
-        {{- if .Values.environment }}
-        - env:
-          {{- range $name, $value := .Values.environment }}
-          - name: {{ $name | quote }}
-            value: {{ $value | quote }}
-          {{- end }}
-        {{- end }}
-          envFrom:
+        - envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}
             - secretRef:
                 name: {{ .Release.Name }}
+        {{- if .Values.environment }}
+        - env:
+          {{- range $name, $value := .Values.environment }}
+            - name: {{ $name | quote }}
+              value: {{ $value | quote }}
+          {{- end }}
+        {{- end }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           name: {{ .Release.Name }}
