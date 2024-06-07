@@ -5,13 +5,13 @@
 replicaCount: 1
 
 image:
-  repository: "phuoc/activemq"
+  repository: "apache/activemq-classic"
   # override image tag, which is .Chart.AppVersion by default
-  tag: "5.18.2"
+  tag: "6.1.1"
+  # pull image policy: "IfNotPresent" or "Always"
   pullPolicy: "IfNotPresent"
 
 imagePullSecrets: []
-
 nameOverride: ""
 fullnameOverride: ""
 
@@ -34,24 +34,29 @@ podSecurityContext:
   privileged: true
   readOnlyRootFilesystem: false
   runAsUser: 0
+  runAsGroup: 0
 
-securityContext: {}
+securityContext:
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 0
 
 service:
   type: ClusterIP
   ports:
-  - name: server-activemq
-    port: 8161
-    protocol: TCP
-    targetPort: 8161
-  - name: core-activemq
-    port: 61616
-    protocol: TCP
-    targetPort: 61616
-  - name: stomp-activemq
-    port: 61613
-    protocol: TCP
-    targetPort: 61613
+    - name: server-activemq
+      port: 8161
+      protocol: TCP
+      targetPort: 8161
+    - name: core-activemq
+      port: 61616
+      protocol: TCP
+      targetPort: 61616
+    - name: stomp-activemq
+      port: 61613
+      protocol: TCP
+      targetPort: 61613
+
 ingress:
   enabled: false
   className: ""
@@ -68,13 +73,13 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
   # requests:
-  #   cpu: 100m
+#   cpu: 100m
 #   memory: 128Mi
 
 startupProbe: {}
   #  httpGet:
   #    path: /
-  #    port: http
+#    port: http
 
 livenessProbe: {}
 #  httpGet:
@@ -105,13 +110,11 @@ persistence:
   storageClass: ""
   accessModes:
     - ReadWriteOnce
-  size: 3Gi
+  size: 2Gi
   annotations: {}
 
-environment:
-  ACTIVEMQ_CONFIG_DIR: /opt/activemq/conf
-  ACTIVEMQ_BROKER_NAME: 'localhost'
-  
+environment: {}
+
 admin:
-  username: admin
-  password: 123456
+  username: "admin"
+  password: "123456"

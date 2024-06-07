@@ -41,42 +41,24 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           securityContext:
             {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          {{- if .Values.startupProbe -}}
+          {{- with .Values.startupProbe }}
           startupProbe:
-            httpGet:
-              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName={{ .Values.environment.ACTIVEMQ_BROKER_NAME }},service=Health
-              port: server-activemq
-              scheme: HTTP
-              httpHeaders:
-                - name: Authorization
-                  value: Basic {{ include "activemq.authentication" . | b64enc }}
-            timeoutSeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 30
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.livenessProbe -}}
+          {{- with .Values.livenessProbe }}
           livenessProbe:
-            httpGet:
-              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName={{ .Values.environment.ACTIVEMQ_BROKER_NAME }},service=Health
-              port: server-activemq
-              scheme: HTTP
-              httpHeaders:
-                - name: Authorization
-                  value: Basic {{ include "activemq.authentication" . | b64enc }}
-            timeoutSeconds: 10
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 5
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.readinessProbe -}}
+          {{- with .Values.readinessProbe }}
           readinessProbe:
-            httpGet:
-              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName={{ .Values.environment.ACTIVEMQ_BROKER_NAME }},service=Health
-              port: server-activemq
-              scheme: HTTP
-              httpHeaders:
-                - name: Authorization
-                  value: Basic {{ include "activemq.authentication" . | b64enc }}
-            timeoutSeconds: 10
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 5
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
           volumeMounts:
             - mountPath: "/var/log/activemq"
               name: logs

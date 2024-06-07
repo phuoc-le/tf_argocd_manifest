@@ -68,27 +68,50 @@ ingress:
           pathType: ImplementationSpecific
   tls: []
 
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-#   memory: 128Mi
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
-startupProbe: {}
-  #  httpGet:
-  #    path: /
-  #    port: http
-
-livenessProbe: {}
-#  httpGet:
-#    path: /
-#    port: http
-readinessProbe: {}
-#  httpGet:
-#    path: /
-#    port: http
+startupProbe:
+  httpGet:
+    path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName={{ .Values.environment.ACTIVEMQ_BROKER_NAME }},service=Health
+    port: server-activemq
+    scheme: HTTP
+    httpHeaders:
+      - name: Authorization
+        value: Basic {{ include "activemq.authentication" . | b64enc }}
+  timeoutSeconds: 30
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 30
+livenessProbe:
+  httpGet:
+    path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName={{ .Values.environment.ACTIVEMQ_BROKER_NAME }},service=Health
+    port: server-activemq
+    scheme: HTTP
+    httpHeaders:
+      - name: Authorization
+        value: Basic {{ include "activemq.authentication" . | b64enc }}
+  timeoutSeconds: 10
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 5
+readinessProbe:
+  httpGet:
+    path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName={{ .Values.environment.ACTIVEMQ_BROKER_NAME }},service=Health
+    port: server-activemq
+    scheme: HTTP
+    httpHeaders:
+      - name: Authorization
+        value: Basic {{ include "activemq.authentication" . | b64enc }}
+  timeoutSeconds: 10
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 5
 
 autoscaling:
   enabled: false
@@ -113,8 +136,7 @@ persistence:
   size: 2Gi
   annotations: {}
 
-environment:
-  ACTIVEMQ_BROKER_NAME: 'localhost'
+environment: {}
 
 admin:
   username: "admin"
