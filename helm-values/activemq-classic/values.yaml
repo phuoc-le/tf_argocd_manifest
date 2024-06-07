@@ -68,27 +68,14 @@ ingress:
           pathType: ImplementationSpecific
   tls: []
 
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-#   cpu: 100m
-#   memory: 128Mi
+resources:
+  limits:
+    cpu: '2'
+    memory: 4Gi
+  requests:
+    cpu: 50m
+    memory: 100Mi
 
-startupProbe: {}
-  #  httpGet:
-  #    path: /
-#    port: http
-
-livenessProbe: {}
-#  httpGet:
-#    path: /
-#    port: http
-readinessProbe: {}
-#  httpGet:
-#    path: /
-#    port: http
 
 autoscaling:
   enabled: false
