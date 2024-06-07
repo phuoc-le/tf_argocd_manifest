@@ -81,7 +81,7 @@ spec:
             - mountPath: "/var/log/activemq"
               name: logs
             - mountPath: "/opt/apache-activemq/data"
-              name: "{{ template "activemq.uname" . }}"
+              name: {{ template "activemq.uname" . }}
             - mountPath: "/opt/apache-activemq/conf/users.properties"
               name: user-conf
               subPath: users.properties
