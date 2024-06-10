@@ -13,7 +13,13 @@ spec:
     helm:
       releaseName: vault
       parameters:
-        - name: "dataStorage.size"
+        - name: "server.dataStorage.size"
           value: "1Gi"
+        - name: "server.dev.enabled"
+          value: "true"
+        - name: "server.dev.devRootToken"
+          value: "root"
+        - name: "ui.enabled"
+          value: "false"
     repoURL: https://helm.releases.hashicorp.com
     targetRevision: 0.28.0

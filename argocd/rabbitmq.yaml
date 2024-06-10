@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rabbitmq
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: rabbitmq
+    repoURL: registry-1.docker.io/bitnamicharts  # note: the oci:// syntax is not included.
+    targetRevision: 14.4.0
+    helm:
+      parameters:
+        - name: "auth.username"
+          value: "admin"
+          forceString: true
+        - name: "auth.password"
+          value: "123456"
+          forceString: true
+        - name: "clustering.name"
+          value: "rabbitmq"
+          forceString: true
+        - name: "persistence.size"
+          value: "1Gi"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default

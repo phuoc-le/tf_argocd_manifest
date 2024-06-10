@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openldap
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: "openldap-stack-ha"
+    repoURL: "https://jp-gouin.github.io/helm-openldap"  # note: the oci:// syntax is not included.
+    targetRevision: 4.2.5
+    helm:
+      parameters:
+        - name: "global.ldapDomain"
+          value: "phucninh.pro"
+          forceString: true
+        - name: "global.adminPassword"
+          value: "123456"
+          forceString: true
+        - name: "global.configPassword"
+          value: "123456"
+          forceString: true
+        - name: "replicaCount"
+          value: "1"
+        - name: "persistence.size"
+          value: "1Gi"
+        - name: "users"
+          value: "phucninh,phuoc"
+        - name: "userPasswords"
+          value: "123456,123456"
+          forceString: true
+        - name: "ltb-passwd.ingress.enabled"
+          value: "false"
+        - name: "phpldapadmin.ingress.enabled"
+          value: "false"
+        - name: "initTLSSecret.tls_enabled"
+          value: "true"
+        - name: "initTLSSecret.secret"
+          value: "openldap-tls"
+        - name: "env.LDAP_ENABLE_TLS"
+          value: "no"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
