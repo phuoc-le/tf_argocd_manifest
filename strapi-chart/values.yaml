@@ -127,7 +127,7 @@ persistence:
   annotations: {}
   accessMode: ReadWriteOnce
   existingClaim: ""
-  storageClass: "-"
+  storageClass: ""
   size: 1Gi
 env:
   configmap:
