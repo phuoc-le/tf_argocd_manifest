@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "strapi-chart.fullname" . }}-deployment
+  name: {{ include "strapi-chart.fullname" . }}
   labels:
     {{- include "strapi-chart.labels" . | nindent 4 }}
 spec:
