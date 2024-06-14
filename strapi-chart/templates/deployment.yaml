@@ -71,7 +71,7 @@ spec:
             - configMapRef:
                 name: {{ include "strapi-chart.fullname" . }}
             {{- end }}
-            {{- if .Values.env.secret }}
+            {{- if .Values.env.secrets }}
             - secretRef:
                 name: {{ include "strapi-chart.fullname" . }}
             {{- end }}
