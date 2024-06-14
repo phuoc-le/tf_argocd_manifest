@@ -64,22 +64,23 @@ resources: {}
 
 startupProbe:
   httpGet:
-    path: /
+    path: /admin
     port: http
-  failureThreshold: 5
+  failureThreshold: 10
   periodSeconds: 20
   timeoutSeconds: 30
 
 readinessProbe:
   httpGet:
-    path: /
+    path: /admin
     port: http
   periodSeconds: 10
   failureThreshold: 5
   timeoutSeconds: 5
 
 livenessProbe:
-  tcpSocket:
+  httpGet:
+    path: /admin
     port: http
   periodSeconds: 10
   failureThreshold: 5
