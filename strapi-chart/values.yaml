@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: strapi/strapi
+  repository: strapi
   pullPolicy: IfNotPresent
-  tag: "3.6.8"
+  tag: latest
 
 imagePullSecrets: []
 nameOverride: ""
