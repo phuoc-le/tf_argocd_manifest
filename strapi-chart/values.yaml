@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: strapi
+  repository: strapi/strapi
   pullPolicy: IfNotPresent
   tag: latest
 
@@ -66,7 +66,7 @@ startupProbe:
   httpGet:
     path: /admin
     port: http
-  failureThreshold: 15
+  failureThreshold: 30
   periodSeconds: 20
   timeoutSeconds: 60
 
@@ -129,7 +129,7 @@ persistence:
   accessMode: ReadWriteOnce
   existingClaim: ""
   storageClass: ""
-  size: 1Gi
+  size: 3Gi
 env:
   configmap:
     DATABASE_CLIENT: "mysql"
