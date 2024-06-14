@@ -1,0 +1,53 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-cluster-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: phucninh-selfsigned-ca
+  namespace: cert-manager
+spec:
+  isCA: true
+  commonName: phucninh-selfsigned-ca
+  secretName: phucninh-ca-secret
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: selfsigned-cluster-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: phucninh-ca-issuer
+spec:
+  ca:
+    secretName: phucninh-ca-secret
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: phucninh-ca-secret
+  namespace: cert-manager
+  labels:
+    controller.cert-manager.io/fao: 'true'
+  annotations:
+    cert-manager.io/certificate-name: phucninh-selfsigned-ca
+    cert-manager.io/common-name: phucninh-selfsigned-ca
+    cert-manager.io/issuer-group: cert-manager.io
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/issuer-name: selfsigned-cluster-issuer
+data:
+  ca.crt: >-
+    LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJpakNDQVRDZ0F3SUJBZ0lRSDkwUXlRVWxtYmxoMTJJVDdOdXFFakFLQmdncWhrak9QUVFEQWpBbE1TTXcKSVFZRFZRUURFeHB3YUhWamJtbHVhQzF3Y204dGMyVnNabk5wWjI1bFpDMWpZVEFlRncweU5EQTJNRE14TWpRMgpOREJhRncweU5EQTVNREV4TWpRMk5EQmFNQ1V4SXpBaEJnTlZCQU1UR25Cb2RXTnVhVzVvTFhCeWJ5MXpaV3htCmMybG5ibVZrTFdOaE1Ga3dFd1lIS29aSXpqMENBUVlJS29aSXpqMERBUWNEUWdBRUxOU081K2VzTk1HazRvTzYKaGQyYW53QTBXQndROG14djVjMmhhc3ZVUnRPcG1EV3FwVXc0eFNYMzBqREJpSVZpOWY0Yyt0ajBjSnpYRVRPYgpEUVJOd3FOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdLa01BOEdBMVVkRXdFQi93UUZNQU1CQWY4d0hRWURWUjBPCkJCWUVGRlJxUmthYVNHenk3MjJzd1hsam8xcVFpVDVXTUFvR0NDcUdTTTQ5QkFNQ0EwZ0FNRVVDSUhyQWhPeXAKQkRzU2pQNWNwaGdScTJibzczaDdUSG45d3puNVZraXFDWGFtQWlFQTFadjVYbkZQeWFYc2MyM1VkaXl2d2Z3eAp3TG5GTHJtdTAxVWJSSVo3a0IwPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+  tls.crt: >-
+    LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJpakNDQVRDZ0F3SUJBZ0lRSDkwUXlRVWxtYmxoMTJJVDdOdXFFakFLQmdncWhrak9QUVFEQWpBbE1TTXcKSVFZRFZRUURFeHB3YUhWamJtbHVhQzF3Y204dGMyVnNabk5wWjI1bFpDMWpZVEFlRncweU5EQTJNRE14TWpRMgpOREJhRncweU5EQTVNREV4TWpRMk5EQmFNQ1V4SXpBaEJnTlZCQU1UR25Cb2RXTnVhVzVvTFhCeWJ5MXpaV3htCmMybG5ibVZrTFdOaE1Ga3dFd1lIS29aSXpqMENBUVlJS29aSXpqMERBUWNEUWdBRUxOU081K2VzTk1HazRvTzYKaGQyYW53QTBXQndROG14djVjMmhhc3ZVUnRPcG1EV3FwVXc0eFNYMzBqREJpSVZpOWY0Yyt0ajBjSnpYRVRPYgpEUVJOd3FOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdLa01BOEdBMVVkRXdFQi93UUZNQU1CQWY4d0hRWURWUjBPCkJCWUVGRlJxUmthYVNHenk3MjJzd1hsam8xcVFpVDVXTUFvR0NDcUdTTTQ5QkFNQ0EwZ0FNRVVDSUhyQWhPeXAKQkRzU2pQNWNwaGdScTJibzczaDdUSG45d3puNVZraXFDWGFtQWlFQTFadjVYbkZQeWFYc2MyM1VkaXl2d2Z3eAp3TG5GTHJtdTAxVWJSSVo3a0IwPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+  tls.key: >-
+    LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tCk1IY0NBUUVFSUxWR3lyUkNQVXc5bjVvUjlUM3A4ZThwZG9hcjVvTTZwQ2txcGFSWmtpMnJvQW9HQ0NxR1NNNDkKQXdFSG9VUURRZ0FFTE5TTzUrZXNOTUdrNG9PNmhkMmFud0EwV0J3UThteHY1YzJoYXN2VVJ0T3BtRFdxcFV3NAp4U1gzMGpEQmlJVmk5ZjRjK3RqMGNKelhFVE9iRFFSTndnPT0KLS0tLS1FTkQgRUMgUFJJVkFURSBLRVktLS0tLQo=
+type: kubernetes.io/tls

@@ -1,0 +1,13 @@
+- hosts: all
+  become: yes
+  tasks:
+  - name: "allow {{ ansible_user }} to have passwordless sudo"
+    lineinfile:
+      dest: /etc/sudoers
+      line: "{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL"
+      validate: 'visudo -cf %s'
+
+  - name: "set up authorized keys for the {{ ansible_user }} user"
+    authorized_key: "user={{ ansible_user }} key={{ item }}"
+    with_file:
+      - ./ssh_key/public_key.pem

@@ -1,0 +1,159 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: phucninh-ingress
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - dev.phucninh.me
+      secretName: dev-phucninh-me-tls
+    - hosts:
+        - blog.phucninh.me
+      secretName: blog-phucninh-me-tls
+    - hosts:
+        - api.phucninh.me
+      secretName: api-phucninh-me-tls
+    - hosts:
+        - jenkins.phucninh.me
+      secretName: jenkins-phucninh-me-tls
+    - hosts:
+        - pga.phucninh.me
+      secretName: pga-phucninh-me-tls
+    - hosts:
+        - minio.phucninh.me
+      secretName: minio-phucninh-me-tls
+    - hosts:
+        - sealed.phucninh.me
+      secretName: sealed-phucninh-me-tls
+    - hosts:
+        - vault.phucninh.me
+      secretName: vault-phucninh-me-tls
+    - hosts:
+        - activemq.phucninh.me
+      secretName: activemq-phucninh-me-tls
+  rules:
+    - host: dev.phucninh.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx
+                port:
+                  number: 80
+    - host: api.phucninh.me
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: strapi-service
+                port:
+                  number: 1337
+    - host: blog.phucninh.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: phucninh-blog
+                port:
+                  number: 80
+    - host: jenkins.phucninh.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jenkins
+                port:
+                  number: 8080
+    - host: pga.phucninh.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pgadmin4
+                port:
+                  number: 80
+    - host: minio.phucninh.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: console
+                port:
+                  number: 9090
+    - host: activemq.phucninh.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: activemq
+                port:
+                  number: 8161
+    - host: sealed.phucninh.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sealed-secrets
+                port:
+                  number: 8080
+    - host: vault.phucninh.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vault
+                port:
+                  number: 8200
+    - host: rabbitmq.phucninh.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rabbitmq
+                port:
+                  number: 15672
+    - host: ldapadmin.phucninh.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: openldap-phpldapadmin
+                port:
+                  number: 80
+    - host: activemq.phucninh.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: activemq
+                port:
+                  number: 8161

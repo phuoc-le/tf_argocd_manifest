@@ -16,10 +16,12 @@ spec:
         - name: "server.dataStorage.size"
           value: "1Gi"
         - name: "server.dev.enabled"
-          value: "true"
+          value: "false"
         - name: "server.dev.devRootToken"
           value: "root"
         - name: "ui.enabled"
+          value: "false"
+        - name: "csi.enabled"
           value: "false"
     repoURL: https://helm.releases.hashicorp.com
     targetRevision: 0.28.0

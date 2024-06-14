@@ -1,0 +1,41 @@
+- hosts: masters
+  become: yes
+  tasks:
+    - name: remove swap
+      shell: "swapoff -a"
+
+    - name: sed fstab
+      shell: sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+    - name: initialize the cluster
+      shell: "kubeadm init --control-plane-endpoint={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} >> cluster_initialized.txt"
+      args:
+        chdir: "/home/{{ ansible_user }}"
+        creates: cluster_initialized.txt
+
+    - name: create .kube directory
+      become: yes
+      become_user: "{{ ansible_user }}"
+      file:
+        path: "/home/{{ ansible_user }}/.kube"
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "/home/{{ ansible_user }}/.kube/config"
+        remote_src: yes
+        owner: "{{ ansible_user }}"
+
+    - name: install Pod network
+      become: yes
+      become_user: "{{ ansible_user }}"
+      shell: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/master/manifests/calico.yaml
+
+    - name: Copy remote kubeconfig file into local machine
+      fetch:
+        src: "/home/{{ ansible_user }}/.kube/config"
+        dest: "./config-{{ inventory_hostname.split('-')[0] }}"
+        flat: yes
+
