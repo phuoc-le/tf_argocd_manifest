@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: strapi
+  namespace: argocd
+spec:
+  destination:
+    namespace: default
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: strapi-chart
+    repoURL: https://github.com/phuoc-le/tf_argocd_manifest.git
+    targetRevision: HEAD
+    helm:
+      parameters:
+        - name: "image.repository"
+          value: "strapi/strapi"
+        - name: "image.pullPolicy"
+          value: "IfNotPresent"
+        - name: "image.tag"
+          value: "3.6.8"
+        - name: "env.secrets.username"
+          value: "app"
+          forceString: true
+        - name: "env.secrets.password"
+          value: "123456"
+          forceString: true
