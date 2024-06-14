@@ -54,7 +54,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: strapi-service
+                name: strapi
                 port:
                   number: 1337
     - host: blog.phucninh.me

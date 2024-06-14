@@ -1,0 +1,12 @@
+{{- if .Values.env.configmap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "strapi-chart.fullname" . }}
+  labels:
+    {{- include "strapi-chart.labels" . | nindent 4 }}
+{{- with .Values.env.configmap }}
+data:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- end }}

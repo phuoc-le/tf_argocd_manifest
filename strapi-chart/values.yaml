@@ -1,0 +1,140 @@
+replicaCount: 2
+
+image:
+  repository: strapi/strapi
+  pullPolicy: IfNotPresent
+  tag: "3.6.8"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  annotations: {}
+  name: ""
+  
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 25%
+    maxUnavailable: 50%
+  
+podAnnotations: {}
+
+terminationGracePeriodSeconds: 30
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 1337
+
+initContainers: []
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: dev.example.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: dev-example-tls
+  #    hosts:
+  #      - dev.example.com
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+startupProbe:
+  httpGet:
+    path: /
+    port: http
+  failureThreshold: 5
+  periodSeconds: 20
+  timeoutSeconds: 30
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  periodSeconds: 10
+  failureThreshold: 5
+  timeoutSeconds: 5
+
+livenessProbe:
+  tcpSocket:
+    port: http
+  periodSeconds: 10
+  failureThreshold: 5
+  timeoutSeconds: 5
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  metrics:
+    - resource:
+        name: memory
+        target:
+          averageValue: 1000Mi
+          type: AverageValue
+      type: Resource
+    - resource:
+        name: cpu
+        target:
+          averageValue: 500m
+          type: AverageValue
+      type: Resource
+  behavior:
+    scaleDown:
+      policiesPeriodSeconds: 300
+      policiesType: Pods
+      policiesValue: 1
+      selectPolicy: Max
+      stabilizationWindowSeconds: 90
+    scaleUp:
+      policiesPeriodSeconds: 90
+      policiesType: Pods
+      policiesValue: 1
+      selectPolicy: Max
+      stabilizationWindowSeconds: 60
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+persistence:
+  enabled: true
+  annotations: {}
+  accessMode: ReadWriteOnce
+  existingClaim: ""
+  storageClass: "-"
+  size: 1Gi
+env:
+  configmap:
+    DATABASE_CLIENT: "mysql"
+    DATABASE_HOST: "mariadb"
+    DATABASE_PORT: "3306"
+    DATABASE_NAME: "strapi"
+  secret:
+    DATABASE_USERNAME: "app"
+    DATABASE_PASSWORD: "123456"

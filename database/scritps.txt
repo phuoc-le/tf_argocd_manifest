@@ -1,0 +1,7 @@
+create database phucninh-blog;
+
+GRANT ALL PRIVILEGES ON `phucninh-blog`.* TO 'superuser'@'%';
+
+create database strapi;
+
+GRANT ALL PRIVILEGES ON `strapi`.* TO 'app'@'%';
