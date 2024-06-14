@@ -66,9 +66,9 @@ startupProbe:
   httpGet:
     path: /admin
     port: http
-  failureThreshold: 10
+  failureThreshold: 15
   periodSeconds: 20
-  timeoutSeconds: 30
+  timeoutSeconds: 60
 
 readinessProbe:
   httpGet:
