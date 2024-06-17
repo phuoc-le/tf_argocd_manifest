@@ -15,11 +15,11 @@ spec:
     helm:
       parameters:
         - name: "image.repository"
-          value: "strapi/strapi"
+          value: "phuoc/strapi"
         - name: "image.pullPolicy"
           value: "IfNotPresent"
         - name: "image.tag"
-          value: "3.6.8"
+          value: "v1.0.8-dev"
         - name: "env.secrets.username"
           value: "app"
           forceString: true

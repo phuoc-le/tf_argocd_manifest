@@ -23,4 +23,4 @@ sudo apt update
 sudo apt install ansible -y
 sudo apt install net-tools -y
 
-kubectl label node kubeadm-worker-3 node-role.kubernetes.io/worker=worker
+kubectl label node k8s-worker-1 node-role.kubernetes.io/worker=worker

@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: strapi/strapi
+  repository: phuoc/strapi
   pullPolicy: IfNotPresent
-  tag: latest
+  tag: v1.0.8-dev
 
 imagePullSecrets: []
 nameOverride: ""
@@ -130,6 +130,7 @@ persistence:
   existingClaim: ""
   storageClass: ""
   size: 3Gi
+  mountPath: "/opt/app/src"
 env:
   configmap:
     DATABASE_CLIENT: "mysql"
