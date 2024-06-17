@@ -77,7 +77,7 @@ spec:
             {{- end }}
           {{- end }}
           volumeMounts:
-            - mountPath: /srv/app
+            - mountPath: {{ .Values.persistence.mountPath}}
               name: data
       volumes:
         - name: data
