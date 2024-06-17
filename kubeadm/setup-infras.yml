@@ -1,0 +1,17 @@
+- name: Setup infra
+  hosts: masters
+  tasks:
+    - name: Install helm
+      community.general.snap:
+        name:
+          - helm
+    - name: setup longhorn service
+      ansible.builtin.shell: "helm install longhorn longhorn --repo https://charts.longhorn.io --namespace longhorn-system --create-namespace --version 1.6.2"
+    - name: setup longhorn nfs service
+      ansible.builtin.shell: "kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.6.2/deploy/prerequisite/longhorn-nfs-installation.yaml"
+    - name: setup ingress-nginx service
+      ansible.builtin.shell: "helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.type=ClusterIP"
+    - name: setup cert-manager service
+      ansible.builtin.shell: "helm install cert-manager cert-manager --repo https://charts.jetstack.io --namespace cert-manager --create-namespace --version v1.15.0 --set crds.enabled=true"
+    - name: setup longhorn service
+      ansible.builtin.shell: ""

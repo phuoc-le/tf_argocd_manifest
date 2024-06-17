@@ -3,14 +3,22 @@ kind: Ingress
 metadata:
   name: argocd-ingress
   namespace: argocd
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/instance: argocd
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: argocd-server
+    app.kubernetes.io/part-of: argocd
+    app.kubernetes.io/version: v2.11.3
+    helm.sh/chart: argo-cd-7.1.3
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "selfsigned-cluster-issuer"
+    cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
+    meta.helm.sh/release-name: argocd
+    meta.helm.sh/release-namespace: argocd
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
 spec:
-  tls:
-    - hosts:
-        - argocd.phucninh.me
-      secretName: argocd-phucninh-me-tls
+  ingressClassName: nginx
   rules:
     - host: argo-cd.phucninh.me
       http:
@@ -22,4 +30,3 @@ spec:
                 name: argocd-server
                 port:
                   number: 80
-  ingressClassName: nginx
