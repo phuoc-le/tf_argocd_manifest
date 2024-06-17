@@ -32,7 +32,7 @@ spec:
         - name: externalDatabase.port
           value: '3306'
         - name: externalDatabase.user
-          value: 'superuser'
+          value: 'app'
         - name: externalDatabase.password
           value: '123456'
           forceString: true

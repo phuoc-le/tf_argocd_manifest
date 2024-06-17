@@ -11,3 +11,5 @@ ansible-playbook -i hosts master.yml
 ansible-playbook -i hosts workers.yml
 
 ansible-playbook -i hosts init-cronjob.yml
+
+ansible-playbook -i hosts set-role-worker.yml
