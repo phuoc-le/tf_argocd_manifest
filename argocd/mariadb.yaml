@@ -24,12 +24,20 @@ spec:
           value: "123456"
           forceString: true
         - name: "auth.database"
-          value: "wordpress"
+          value: "test"
         - name: "primary.persistence.size"
           value: 1Gi
         - name: "readReplicas.persistence.size"
           value: 1Gi
-
+      valuesObject:
+        initdbScripts:
+          init.sql: |
+            CREATE USER app identified by '123456';
+            CREATE DATABASE `phucninh-blog`;
+            GRANT ALL PRIVILEGES ON `phucninh-blog`.* TO 'app'@'%';
+            CREATE DATABASE `strapi`;
+            GRANT ALL PRIVILEGES ON `strapi`.* TO 'app'@'%';
+            FLUSH PRIVILEGES;
   destination:
     server: https://kubernetes.default.svc
     namespace: default

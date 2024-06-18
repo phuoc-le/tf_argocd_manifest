@@ -1,38 +1,38 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: phucninh-blog
+  name: phuocle-blog
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: registry-1.docker.io/bitnamicharts
-    targetRevision: 22.4.11
+    targetRevision: 22.3.1
     helm:
       parameters:
         - name: fullnameOverride
-          value: 'phucninh-blog'
+          value: 'phuocle-blog'
         - name: global.storageClass
-          value: 'longhorn'
+          value: 'longhorn-nfs'
         - name: image.tag
           value: '6.5.4'
         - name: wordpressUsername
           value: 'admin'
+        - name: wordpressEmail
+          value: 'admin@phuocle.me'
+        - name: wordpressFirstName
+          value: 'Phuoc'
+        - name: wordpressLastName
+          value: 'Le'
+        - name: wordpressBlogName
+          value: "Phuoc Le's Blog"
         - name: wordpressPassword
           value: '123456'
           forceString: true
-        - name: wordpressEmail
-          value: 'admin@phucninh.me'
-        - name: wordpressFirstName
-          value: 'Phuc'
-        - name: wordpressLastName
-          value: 'Ninh'
-        - name: wordpressBlogName
-          value: "Phuc Ninh's Blog"
         - name: service.type
           value: 'ClusterIP'
-        - name: persistence.size
-          value: '3Gi'
+        - name: persistence.existingClaim
+          value: 'phuocle-blog'
         - name: mariadb.enabled
           value: 'false'
         - name: externalDatabase.host
@@ -45,7 +45,7 @@ spec:
           value: '123456'
           forceString: true
         - name: externalDatabase.database
-          value: 'phucninh-blog'
+          value: 'phuocle-blog'
     chart: wordpress
   destination:
     server: 'https://kubernetes.default.svc'

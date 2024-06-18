@@ -1,0 +1,34 @@
+pipeline {
+
+    agent { node { label 'jenkins-agent' } }
+    parameters {
+        string(name: 'SERVICE', defaultValue: 'mariadb', description: '', trim: true)
+        string(name: 'NAMESPACE', defaultValue: 'default', description: '', trim: true)
+        string(name: 'EXTERNAL_IP', defaultValue: '172.16.0.80', description: '', trim: true)
+    }
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '5'))
+        disableResume()
+    }
+    environment {
+        SERVICE = "$params.SERVICE"
+        NAMESPACE = "$params.NAMESPACE"
+        EXTERNAL_IP = "$params.EXTERNAL_IP"
+    }
+
+    stages {
+        stage('Patch service') {
+            steps {
+                echo "Start patching ...."
+                script {
+                    withKubeConfig([namespace: "$NAMESPACE"]) {
+                      sh '''
+                        kubectl patch svc $SERVICE -p '{"spec":{"externalIPs":["'$EXTERNAL_IP'"]}}' -n $NAMESPACE
+                      '''
+                    }
+                }
+                echo "Finish patching ...."
+            }
+        }
+    }
+}

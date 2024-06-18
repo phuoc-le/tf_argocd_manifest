@@ -1,0 +1,35 @@
+pipeline {
+
+    agent { node { label 'jenkins-agent' } }
+    parameters {
+        string(name: 'SERVICE_NAME', defaultValue: 'nginx', description: '')
+    }
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '5'))
+        disableResume()
+    }
+    environment {
+        BUILD_ENV = "dev"
+        SERVICE_NAME = "$params.SERVICE_NAME"
+        PORT = 80
+        HELM_CHART_REPO = "https://charts.bitnami.com/bitnami"
+        HELM_CHART_NAME = "nginx"
+        HELM_CHART_VERSION = "15.9.0"
+        NAMESPACE = "default"
+    }
+
+    stages {
+        stage('Deploy') {
+            steps {
+                echo "Start deploy ...."
+                script {
+                    withKubeConfig([namespace: "$NAMESPACE"]) {
+                        sh 'helm upgrade --install $SERVICE_NAME $HELM_CHART_NAME --repo $HELM_CHART_REPO --set service.type=ClusterIP --version $HELM_CHART_VERSION  --wait'
+                    }
+                }
+                echo "Finish deploy ...."
+            }
+        }
+    }
+
+}
