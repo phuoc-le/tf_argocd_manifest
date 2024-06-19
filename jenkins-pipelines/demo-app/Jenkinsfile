@@ -37,11 +37,11 @@ pipeline {
                     withKubeConfig([namespace: "$NAMESPACE"]) {
                        def values = params.VALUES
                        if (values == null || values.trim().isEmpty()) {
-                            sh 'helm upgrade --install $SERVICE_NAME $HELM_CHART_NAME --repo $HELM_CHART_REPO --set service.type=ClusterIP -n $NAMESPACE --version $HELM_CHART_VERSION --wait'
+                            sh 'helm upgrade --install $SERVICE_NAME $HELM_CHART_NAME --repo $HELM_CHART_REPO --set service.type=ClusterIP -n $NAMESPACE --create-namespace --version $HELM_CHART_VERSION --wait'
                         } else {
                             sh 'rm -f /tmp/values.yaml'
                             writeFile(file: '/tmp/values.yaml', text: VALUES)
-                            sh 'helm upgrade --install $SERVICE_NAME $HELM_CHART_NAME --repo $HELM_CHART_REPO -f /tmp/values.yaml --set service.type=ClusterIP -n $NAMESPACE --version $HELM_CHART_VERSION  --wait'
+                            sh 'helm upgrade --install $SERVICE_NAME $HELM_CHART_NAME --repo $HELM_CHART_REPO -f /tmp/values.yaml --set service.type=ClusterIP -n $NAMESPACE --create-namespace --version $HELM_CHART_VERSION  --wait'
                         }
                     }
                 }
