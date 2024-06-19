@@ -10,20 +10,274 @@ spec:
     repoURL: "https://charts.jenkins.io"  # note: the oci:// syntax is not included.
     targetRevision: 5.1.23
     helm:
-      parameters:
-        - name: "persistence.size"
-          value: "2Gi"
-        - name: "controller.image.tag"
-          value: "latest-jdk17"
-        - name: "controller.jenkinsAdminEmail"
-          value: "admin@phucninh.pro"
-        - name: "controller.jenkinsUrl"
-          value: "https://jenkins.phucninh.pro/"
-        - name: "controller.admin.username"
-          value: "admin"
-        - name: "controller.admin.password"
-          value: "123456"
-          forceString: true
+      valuesObject:
+        controller:
+          persistence:
+            size: 2Gi
+          image:
+            tag: latest-jdk17
+            pullPolicy: IfNotPresent
+          jenkinsAdminEmail: admin@phucninh.pro
+          jenkinsUrl: https://jenkins.phucninh.pro/
+          admin:
+            username: admin
+            password: "123456"
+          installPlugins:
+            - kubernetes:4246.v5a_12b_1fe120e
+            - workflow-aggregator:596.v8c21c963d92d
+            - git:5.2.2
+            - configuration-as-code:1810.v9b_c30a_249a_4c
+            - kubernetes-cli:1.12.1
+        agent:
+          enabled: true
+          defaultsProviderTemplate: jenkins-agent-deploy
+          jenkinsUrl:
+          jenkinsTunnel:
+          kubernetesConnectTimeout: 5
+          kubernetesReadTimeout: 15
+          maxRequestsPerHostStr: "32"
+          retentionTimeout: 5
+          waitForPodSec: 600
+          namespace: default
+          # -- Custom Pod labels (an object with `label-key: label-value` pairs)
+          podLabels: {}
+          # -- Custom registry used to pull the agent jnlp image from
+          jnlpregistry:
+          image:
+            # -- Repository to pull the agent jnlp image from
+            repository: "phuoc/jenkins-agent-kubernetes"
+            # -- Tag of the image to pull
+            tag: "latest"
+          # -- Configure working directory for default agent
+          workingDir: "/home/jenkins/agent"
+          nodeUsageMode: "NORMAL"
+          # -- Append Jenkins labels to the agent
+          customJenkinsLabels: []
+          # -- Name of the secret to be used to pull the image
+          imagePullSecretName:
+          componentName: "jenkins-agent"
+          # -- Enables agent communication via websockets
+          websocket: false
+          directConnection: false
+          # -- Agent privileged container
+          privileged: false
+          # -- Configure container user
+          runAsUser:
+          # -- Configure container group
+          runAsGroup:
+          # -- Enables the agent to use the host network
+          hostNetworking: false
+          # -- Resources allocation (Requests and Limits)
+          resources:
+            requests:
+              cpu: "512m"
+              memory: "512Mi"
+              # ephemeralStorage:
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+              # ephemeralStorage:
+          livenessProbe: {}
+          #    execArgs: "cat /tmp/healthy"
+          #    failureThreshold: 3
+          #    initialDelaySeconds: 0
+          #    periodSeconds: 10
+          #    successThreshold: 1
+          #    timeoutSeconds: 1
+
+          # You may want to change this to true while testing a new image
+          # -- Always pull agent container image before build
+          alwaysPullImage: false
+          # When using Pod Security Admission in the Agents namespace with the restricted Pod Security Standard,
+          # the jnlp container cannot be scheduled without overriding its container definition with a securityContext.
+          # This option allows to automatically inject in the jnlp container a securityContext
+          # that is suitable for the use of the restricted Pod Security Standard.
+          # -- Set a restricted securityContext on jnlp containers
+          restrictedPssSecurityContext: false
+          # Controls how agent pods are retained after the Jenkins build completes
+          # Possible values: Always, Never, OnFailure
+          podRetention: "Never"
+          # Disable if you do not want the Yaml the agent pod template to show up
+          # in the job Console Output. This can be helpful for either security reasons
+          # or simply to clean up the output to make it easier to read.
+          showRawYaml: true
+
+          # You can define the volumes that you want to mount for this container
+          # Allowed types are: ConfigMap, EmptyDir, EphemeralVolume, HostPath, Nfs, PVC, Secret
+          # Configure the attributes as they appear in the corresponding Java class for that type
+          # https://github.com/jenkinsci/kubernetes-plugin/tree/master/src/main/java/org/csanchez/jenkins/plugins/kubernetes/volumes
+          # -- Additional volumes
+          volumes: []
+          # - type: ConfigMap
+          #   configMapName: myconfigmap
+          #   mountPath: /var/myapp/myconfigmap
+          # - type: EmptyDir
+          #   mountPath: /var/myapp/myemptydir
+          #   memory: false
+          # - type: EphemeralVolume
+          #   mountPath: /var/myapp/myephemeralvolume
+          #   accessModes: ReadWriteOnce
+          #   requestsSize: 10Gi
+          #   storageClassName: mystorageclass
+          # - type: HostPath
+          #   hostPath: /var/lib/containers
+          #   mountPath: /var/myapp/myhostpath
+          # - type: Nfs
+          #   mountPath: /var/myapp/mynfs
+          #   readOnly: false
+          #   serverAddress: "192.0.2.0"
+          #   serverPath: /var/lib/containers
+          # - type: PVC
+          #   claimName: mypvc
+          #   mountPath: /var/myapp/mypvc
+          #   readOnly: false
+          # - type: Secret
+          #   defaultMode: "600"
+          #   mountPath: /var/myapp/mysecret
+          #   secretName: mysecret
+          # Pod-wide environment, these vars are visible to any container in the agent pod
+
+          # You can define the workspaceVolume that you want to mount for this container
+          # Allowed types are: DynamicPVC, EmptyDir, EphemeralVolume, HostPath, Nfs, PVC
+          # Configure the attributes as they appear in the corresponding Java class for that type
+          # https://github.com/jenkinsci/kubernetes-plugin/tree/master/src/main/java/org/csanchez/jenkins/plugins/kubernetes/volumes/workspace
+          # -- Workspace volume (defaults to EmptyDir)
+          workspaceVolume: {}
+          ## DynamicPVC example
+          # - type: DynamicPVC
+          #   configMapName: myconfigmap
+          ## EmptyDir example
+          # - type: EmptyDir
+          #   memory: false
+          ## EphemeralVolume example
+          # - type: EphemeralVolume
+          #   accessModes: ReadWriteOnce
+          #   requestsSize: 10Gi
+          #   storageClassName: mystorageclass
+          ## HostPath example
+          # - type: HostPath
+          #   hostPath: /var/lib/containers
+          ## NFS example
+          # - type: Nfs
+          #   readOnly: false
+          #   serverAddress: "192.0.2.0"
+          #   serverPath: /var/lib/containers
+          ## PVC example
+          # - type: PVC
+          #   claimName: mypvc
+          #   readOnly: false
+
+          # Pod-wide environment, these vars are visible to any container in the agent pod
+          # -- Environment variables for the agent Pod
+          envVars: []
+          # - name: PATH
+          #   value: /usr/local/bin
+          # -- Mount a secret as environment variable
+          secretEnvVrs: []
+          # - key: PATH
+          #   optional: false # default: false
+          #   secretKey: MY-K8S-PATH
+          #   secretName: my-k8s-secret
+
+          # -- Node labels for pod assignment
+          nodeSelector: {}
+          # Key Value selectors. Ex:
+          # nodeSelector
+          #   jenkins-agent: v1
+
+          # -- Command to execute when side container starts
+          command:
+          # -- Arguments passed to command to execute
+          args: "${computer.jnlpmac} ${computer.name}"
+          # -- Side container name
+          sideContainerName: "jnlp"
+
+          # Doesn't allocate pseudo TTY by default
+          # -- Allocate pseudo tty to the side container
+          TTYEnabled: false
+          # -- Max number of agents to launch
+          containerCap: 10
+          # -- Agent Pod base name
+          podName: "jenkins-agent"
+
+          # -- Allows the Pod to remain active for reuse until the configured number of minutes has passed since the last step was executed on it
+          idleMinutes: 0
+
+
+          # The raw yaml of a Pod API Object, for example, this allows usage of toleration for agent pods.
+          # https://github.com/jenkinsci/kubernetes-plugin#using-yaml-to-define-pod-templates
+          # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+          # -- The raw yaml of a Pod API Object to merge into the agent spec
+          yamlTemplate: ""
+          # yamlTemplate: |-
+          #   apiVersion: v1
+          #   kind: Pod
+          #   spec:
+          #     tolerations:
+          #     - key: "key"
+          #       operator: "Equal"
+          #       value: "value"
+
+          # -- Defines how the raw yaml field gets merged with yaml definitions from inherited pod templates. Possible values: "merge" or "override"
+          yamlMergeStrategy: "override"
+          # -- Controls whether the defined yaml merge strategy will be inherited if another defined pod template is configured to inherit from the current one
+          inheritYamlMergeStrategy: false
+          # -- Timeout in seconds for an agent to be online
+          connectTimeout: 100
+          # -- Annotations to apply to the pod
+          annotations: {}
+
+          # Containers specified here are added to all agents. Set key empty to remove container from additional agents.
+          # -- Add additional containers to the agents
+          additionalontainers: []
+          #  - sideContainerName: dind
+          #    image:
+          #      repository: docker
+          #      tag: dind
+          #    command: dockerd-entrypoint.sh
+          #    args: ""
+          #    privileged: true
+          #    resources:
+          #      requests:
+          #        cpu: 500m
+          #        memory: 1Gi
+          #      limits:
+          #        cpu: 1
+          #        memory: 2Gi
+
+          # Useful when configuring agents only with the podTemplates value, since the default podTemplate populated by values mentioned above will be excluded in the rendered template.
+          # -- Disable the default Jenkins Agent configuration
+          disableDefaultAgent: true
+
+          # Below is the implementation of custom pod templates for the default configured kubernetes cloud.
+          # Add a key under podTemplates for each pod template. Each key (prior to | character) is just a label, and can be any value.
+          # Keys are only used to give the pod template a meaningful name. The only restriction is they may only contain RFC 1123 \ DNS label
+          # characters: lowercase letters, numbers, and hyphens. Each pod template can contain multiple containers.
+          # For this pod templates configuration to be loaded, the following values must be set:
+          # controller.JCasC.defaultConfig: true
+          # Best reference is https://<jenkins_url>/configuration-as-code/reference#Cloud-kubernetes. The example below creates a python pod template.
+          # -- Configures extra pod templates for the default kubernetes cloud
+          podTemplates:
+            jenkins-agent-deploy: |
+              - name: jenkins-agent-deploy
+                label: deploy
+                serviceAccount: jenkins
+                namespace: default
+                containers:
+                - name: jnlp
+                  image: phuoc/jenkins-agent-kubernetes:latest
+                  command:
+                  args: "^${computer.jnlpmac} ^${computer.name}"
+                  envVars:
+                  - envVar:
+                      key: "JENKINS_URL"
+                      value: "http://jenkins.default.svc.cluster.local:8080/"
+                  ttyEnabled: true
+                  privileged: true
+                  resourceRequestCpu: "200m"
+                  resourceRequestMemory: "512Mi"
+                  resourceLimitCpu: "1"
+                  resourceLimitMemory: "2Gi"
   destination:
     server: https://kubernetes.default.svc
     namespace: default

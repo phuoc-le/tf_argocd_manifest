@@ -1,6 +1,6 @@
 pipeline {
 
-    agent { node { label 'jenkins-agent' } }
+    agent { node { label 'deploy' } }
     parameters {
         string(name: 'SERVICE', defaultValue: 'mariadb', description: '', trim: true)
         string(name: 'NAMESPACE', defaultValue: 'default', description: '', trim: true)

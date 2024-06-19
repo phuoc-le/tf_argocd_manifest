@@ -1,8 +1,14 @@
 pipeline {
 
-    agent { node { label 'jenkins-agent' } }
+    agent { node { label 'deploy' } }
     parameters {
+        choice(name: 'MODE', choices: ['DEPLOY', 'DELETE'], description: '')
         string(name: 'SERVICE_NAME', defaultValue: 'nginx', description: '')
+        text(name: 'VALUES', defaultValue: '', description: 'Values file for helm chart')
+        string(name: 'NAMESPACE', defaultValue: 'default', description: '')
+        string(name: 'HELM_CHART_REPO', defaultValue: 'https://charts.bitnami.com/bitnami', description: '')
+        string(name: 'HELM_CHART_NAME', defaultValue: 'nginx', description: '')
+        string(name: 'HELM_CHART_VERSION', defaultValue: '18.1.2', description: '')
     }
     options {
         buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '5'))
@@ -12,22 +18,50 @@ pipeline {
         BUILD_ENV = "dev"
         SERVICE_NAME = "$params.SERVICE_NAME"
         PORT = 80
-        HELM_CHART_REPO = "https://charts.bitnami.com/bitnami"
-        HELM_CHART_NAME = "nginx"
-        HELM_CHART_VERSION = "15.9.0"
-        NAMESPACE = "default"
+        HELM_CHART_REPO = "$params.HELM_CHART_REPO"
+        HELM_CHART_NAME = "$params.HELM_CHART_NAME"
+        HELM_CHART_VERSION = "$params.HELM_CHART_VERSION"
+        NAMESPACE = "$params.NAMESPACE"
     }
 
     stages {
         stage('Deploy') {
+            when {
+                anyOf {
+                    environment name: 'MODE', value: 'DEPLOY'
+                }
+            }
             steps {
-                echo "Start deploy ...."
+                echo "Start deploy $SERVICE_NAME...."
                 script {
                     withKubeConfig([namespace: "$NAMESPACE"]) {
-                        sh 'helm upgrade --install $SERVICE_NAME $HELM_CHART_NAME --repo $HELM_CHART_REPO --set service.type=ClusterIP --version $HELM_CHART_VERSION  --wait'
+                       def values = params.VALUES
+                       if (values == null || values.trim().isEmpty()) {
+                            sh 'helm upgrade --install $SERVICE_NAME $HELM_CHART_NAME --repo $HELM_CHART_REPO --set service.type=ClusterIP -n $NAMESPACE --version $HELM_CHART_VERSION --wait'
+                        } else {
+                            sh 'rm -f /tmp/values.yaml'
+                            writeFile(file: '/tmp/values.yaml', text: VALUES)
+                            sh 'helm upgrade --install $SERVICE_NAME $HELM_CHART_NAME --repo $HELM_CHART_REPO -f /tmp/values.yaml --set service.type=ClusterIP -n $NAMESPACE --version $HELM_CHART_VERSION  --wait'
+                        }
                     }
                 }
-                echo "Finish deploy ...."
+                echo "Finish deploy $SERVICE_NAME...."
+            }
+        }
+        stage('Delete') {
+            when {
+                anyOf {
+                    environment name: 'MODE', value: 'DELETE'
+                }
+            }
+            steps {
+                echo "Start delete $SERVICE_NAME...."
+                script {
+                    withKubeConfig([namespace: "$NAMESPACE"]) {
+                        sh 'helm del $SERVICE_NAME -n $NAMESPACE'
+                    }
+                }
+                echo "Finish delete $SERVICE_NAME...."
             }
         }
     }
