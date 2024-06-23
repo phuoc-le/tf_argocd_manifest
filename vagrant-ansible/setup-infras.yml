@@ -788,4 +788,4 @@
         msg: "{{ command_status.stdout_lines }}"
       when:
         - vault_pod_info.failed == true
-        - command_status.rc != 0
+        - command_status.rc == 0
