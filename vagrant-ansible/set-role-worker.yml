@@ -1,0 +1,6 @@
+- name: Set role
+  hosts: masters
+  tasks:
+    - name: set the worker hosts into worker role
+      ansible.builtin.shell: "kubectl label nodes {{ item }} kubernetes.io/role=worker"
+      loop: "{{ query('inventory_hostnames', 'workers') }}"

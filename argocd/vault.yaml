@@ -4,9 +4,6 @@ metadata:
   name: vault
   namespace: argocd
 spec:
-  destination:
-    namespace: default
-    server: https://kubernetes.default.svc
   project: default
   source:
     chart: vault
@@ -25,3 +22,11 @@ spec:
           value: "false"
     repoURL: https://helm.releases.hashicorp.com
     targetRevision: 0.28.0
+  destination:
+    namespace: infra
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true

@@ -1,0 +1,81 @@
+- hosts: all
+  become: yes
+  vars:
+    KUBE_VERSION: '1.30.3'
+  tasks:
+    - name: Download the public signing key for the Kubernetes
+      get_url: "url=https://pkgs.k8s.io/core:/stable:/v{{KUBE_VERSION[0:4]}}/deb/Release.key dest=/tmp/Release.key"
+
+    - name: Add the signing key
+      shell: gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg --batch --yes /tmp/Release.key
+
+    - name: "Add the appropriate Kubernetes apt repository for {{KUBE_VERSION[0:4]}} version"
+      shell: |
+        tee /etc/apt/sources.list.d/kubernetes.list <<EOF
+        deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{KUBE_VERSION[0:4]}}/deb/ /
+        EOF
+
+    - name: Update apt packages
+      apt:
+        update_cache: true
+        
+    - name: Hold kubelet
+      ansible.builtin.dpkg_selections:
+        name: kubelet
+        selection: hold
+
+    - name: Hold kubeadm
+      ansible.builtin.dpkg_selections:
+        name: kubeadm
+        selection: hold
+
+    - name: install kubelet
+      apt:
+        allow_change_held_packages: true
+        name: kubelet={{KUBE_VERSION}}-*
+        state: present
+        update_cache: true
+
+    - name: install kubeadm
+      apt:
+        allow_change_held_packages: true
+        name: kubeadm={{KUBE_VERSION}}-*
+        state: present
+        update_cache: true
+
+    - name: just force systemd to reread configs
+      systemd:
+        daemon_reload: yes
+
+    - name: Restart kubelet
+      systemd:
+        state: started
+        name: kubelet
+
+- hosts: masters
+  become: yes
+  vars:
+    KUBE_VERSION: '1.30.3'
+  tasks:
+    - name: Hold kubectl
+      ansible.builtin.dpkg_selections:
+        name: kubectl
+        selection: hold
+    
+    - name: install kubectl
+      apt:
+        name: kubectl={{KUBE_VERSION}}-*
+        allow_change_held_packages: yes
+        state: present
+
+    - name: Upgrade kubeadm control plane
+      shell: sudo kubeadm upgrade plan
+
+    - name: Upgrade kubeadm control plane
+      shell: sudo kubeadm upgrade apply v{{KUBE_VERSION}} -y
+
+- hosts: workers
+  become: yes
+  tasks:
+    - name: Upgrade kubeadm node
+      shell: sudo kubeadm upgrade node

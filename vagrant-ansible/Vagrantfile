@@ -1,0 +1,49 @@
+
+k8s_cluster = {
+  "kubeadm-master" => { :ip => "172.16.0.90", :default_gw => "172.16.0.1", :name => "kubeadm-master", :hostname=> "kubeadm-master", :cpus => 2, :mem => 4096},
+  "kubeadm-worker-1" => { :ip => "172.16.0.91", :default_gw => "172.16.0.1", :name => "kubeadm-worker-1", :hostname=> "kubeadm-worker-1", :cpus => 4, :mem => 8192 },
+  "kubeadm-worker-2" => { :ip => "172.16.0.92", :default_gw => "172.16.0.1", :name => "kubeadm-worker-2", :hostname=> "kubeadm-worker-2", :cpus => 4, :mem => 8192 },
+  "kubeadm-worker-3" => { :ip => "172.16.0.93", :default_gw => "172.16.0.1", :name => "kubeadm-worker-3", :hostname=> "kubeadm-worker-3", :cpus => 4, :mem => 8192 }
+}
+
+Vagrant.configure("2") do |config|
+    config.ssh.keep_alive = true
+    config.env.enable
+    # cloud-init script
+    config.vm.cloud_init :user_data do |cloud_init|
+        cloud_init.content_type = "text/cloud-config"
+        cloud_init.path = "cloud-init.yml"
+    end
+
+    k8s_cluster.each_with_index do |(hostname, info), index|
+        config.vm.define hostname do |k8s_node|
+            k8s_node.vm.box = "generic/ubuntu2304"
+            k8s_node.vm.box_version = "4.3.12"
+            k8s_node.vm.box_download_insecure = true
+            k8s_node.vm.network "public_network", ip: "#{info[:ip]}"
+            k8s_node.vm.hostname = "#{info[:hostname]}"
+            k8s_node.vm.boot_timeout = 600
+            k8s_node.vm.provider :vmware_workstation do |vmware|
+                vmware.gui = true
+                vmware.linked_clone = false
+                vmware.ssh_info_public = true
+                vmware.port_forward_network_pause = 1
+                vmware.vmx["displayname"] = "#{info[:name]}"
+                vmware.vmx["memsize"] = "#{info[:mem]}"
+                vmware.vmx["numvcpus"] = "#{info[:cpus]}"
+            end
+
+            k8s_node.vm.provision "file", source: "./extend_disk.sh", destination: "/tmp/extend_disk.sh"
+            k8s_node.vm.provision "shell", inline: <<-SHELL
+                sudo mv /tmp/extend_disk.sh /opt/extend_disk.sh
+                sudo sh /opt/extend_disk.sh
+            SHELL
+            k8s_node.vm.provision :shell, path: "create_cronjob.sh", privileged: false
+            k8s_node.vm.provision "shell", inline: <<-SHELL
+                wsl
+                sleep 3s
+                sh ping.sh
+            SHELL
+        end # end node
+    end # end cluster
+end

@@ -2,7 +2,7 @@ FROM jenkins/inbound-agent:alpine as jnlp
 
 FROM node:20-alpine
 
-RUN apk -U add openjdk11-jre git curl openssl bash
+RUN apk -U add openjdk17-jre git curl openssl bash
 
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
     && chmod 755 kubectl \

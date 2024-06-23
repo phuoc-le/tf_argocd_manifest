@@ -1,0 +1,62 @@
+- hosts: masters
+  become: yes
+  vars:
+    USERNAME: 'ubuntu'
+  tasks:
+    - name: remove swap
+      shell: "swapoff -a"
+
+    - name: sed fstab
+      shell: sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+    - name: initialize the cluster
+      shell: "kubeadm init --control-plane-endpoint={{ hostvars[inventory_hostname]['ansible_all_ipv4_addresses'][1] }} >> cluster_initialized.txt"
+      args:
+        chdir: "/home/{{ ansible_user }}"
+        creates: cluster_initialized.txt
+
+    - name: "create .kube directory for {{ ansible_user }}"
+      become: yes
+      become_user: "{{ ansible_user }}"
+      file:
+        path: "/home/{{ ansible_user }}/.kube"
+        state: directory
+        mode: 0755
+
+    - name: "create .kube directory for {{ USERNAME }}"
+      become: yes
+      file:
+        path: "/home/{{ USERNAME }}/.kube"
+        state: directory
+        mode: 0755
+        owner: "{{ USERNAME }}"
+        group: "{{ USERNAME }}"
+
+    - name: "copy admin.conf to {{ ansible_user }}'s kube config"
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "/home/{{ ansible_user }}/.kube/config"
+        remote_src: yes
+        owner: "{{ ansible_user }}"
+
+    - name: "copy admin.conf to {{ USERNAME }}'s kube config"
+      become: yes
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "/home/{{ USERNAME }}/.kube/config"
+        remote_src: yes
+        owner: "{{ USERNAME }}"
+        group: "{{ USERNAME }}"
+
+    - name: Download calico network manifest to the cluster.
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/projectcalico/calico/master/manifests/calico.yaml
+        dest: /tmp/calico.yaml
+        mode: '0664'
+
+    - name: Apply calico network manifest to the cluster.
+      become_user: "{{ ansible_user }}"
+      kubernetes.core.k8s:
+        state: present
+        src: /tmp/calico.yaml

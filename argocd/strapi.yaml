@@ -4,9 +4,6 @@ metadata:
   name: strapi
   namespace: argocd
 spec:
-  destination:
-    namespace: default
-    server: https://kubernetes.default.svc
   project: default
   source:
     path: strapi-chart
@@ -20,17 +17,26 @@ spec:
           value: "IfNotPresent"
         - name: "image.tag"
           value: "latest"
-        - name: "emv.configmap.DATABASE_CLIENT"
+        - name: "env.configmap.DATABASE_CLIENT"
           value: "mysql2"
-        - name: "emv.configmap.DATABASE_HOST"
-          value: "mariadb"
-        - name: "emv.configmap.DATABASE_NAME"
+        - name: "env.configmap.DATABASE_HOST"
+          value: "mariadb.infra"
+        - name: "env.configmap.DATABASE_NAME"
           value: "strapi"
-        - name: "emv.configmap.DATABASE_PORT"
+        - name: "env.configmap.DATABASE_PORT"
           value: "3306"
+          forceString: true
         - name: "env.secrets.DATABASE_USERNAME"
           value: "app"
           forceString: true
         - name: "env.secrets.DATABASE_PASSWORD"
           value: "123456"
           forceString: true
+  destination:
+    namespace: default
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true

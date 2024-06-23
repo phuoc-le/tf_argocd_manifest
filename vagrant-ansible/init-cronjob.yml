@@ -1,0 +1,16 @@
+- hosts: all
+  become: yes
+  tasks:
+  - name: copy start.sh file
+    ansible.builtin.copy:
+      src: ./start.sh
+      dest: /opt/start.sh
+      owner: root
+      group: root
+      mode: 755
+
+  - name: Creates an entry "@reboot sudo /opt/start.sh"
+    ansible.builtin.cron:
+      name: "init kubelet"
+      special_time: reboot
+      job: "sudo /opt/start.sh"

@@ -12,13 +12,11 @@ spec:
     helm:
       valuesObject:
         controller:
-          persistence:
-            size: 2Gi
           image:
             tag: latest-jdk17
             pullPolicy: IfNotPresent
-          jenkinsAdminEmail: admin@phucninh.pro
-          jenkinsUrl: https://jenkins.phucninh.pro/
+          jenkinsAdminEmail: admin@phucninh.me
+          jenkinsUrl: https://jenkins.phucninh.me/
           admin:
             username: admin
             password: "123456"
@@ -28,6 +26,8 @@ spec:
             - git:5.2.2
             - configuration-as-code:1810.v9b_c30a_249a_4c
             - kubernetes-cli:1.12.1
+        persistence:
+          size: 2Gi
         agent:
           enabled: true
           defaultsProviderTemplate: jenkins-agent-deploy
@@ -38,7 +38,7 @@ spec:
           maxRequestsPerHostStr: "32"
           retentionTimeout: 5
           waitForPodSec: 600
-          namespace: default
+          namespace: infra
           # -- Custom Pod labels (an object with `label-key: label-value` pairs)
           podLabels: {}
           # -- Custom registry used to pull the agent jnlp image from
@@ -87,7 +87,7 @@ spec:
 
           # You may want to change this to true while testing a new image
           # -- Always pull agent container image before build
-          alwaysPullImage: false
+          alwaysPullImage: true
           # When using Pod Security Admission in the Agents namespace with the restricted Pod Security Standard,
           # the jnlp container cannot be scheduled without overriding its container definition with a securityContext.
           # This option allows to automatically inject in the jnlp container a securityContext
@@ -100,8 +100,7 @@ spec:
           # Disable if you do not want the Yaml the agent pod template to show up
           # in the job Console Output. This can be helpful for either security reasons
           # or simply to clean up the output to make it easier to read.
-          showRawYaml: true
-
+          showRawYaml: false
           # You can define the volumes that you want to mount for this container
           # Allowed types are: ConfigMap, EmptyDir, EphemeralVolume, HostPath, Nfs, PVC, Secret
           # Configure the attributes as they appear in the corresponding Java class for that type
@@ -199,11 +198,8 @@ spec:
           containerCap: 10
           # -- Agent Pod base name
           podName: "jenkins-agent"
-
           # -- Allows the Pod to remain active for reuse until the configured number of minutes has passed since the last step was executed on it
           idleMinutes: 0
-
-
           # The raw yaml of a Pod API Object, for example, this allows usage of toleration for agent pods.
           # https://github.com/jenkinsci/kubernetes-plugin#using-yaml-to-define-pod-templates
           # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
@@ -217,7 +213,6 @@ spec:
           #     - key: "key"
           #       operator: "Equal"
           #       value: "value"
-
           # -- Defines how the raw yaml field gets merged with yaml definitions from inherited pod templates. Possible values: "merge" or "override"
           yamlMergeStrategy: "override"
           # -- Controls whether the defined yaml merge strategy will be inherited if another defined pod template is configured to inherit from the current one
@@ -248,7 +243,6 @@ spec:
           # Useful when configuring agents only with the podTemplates value, since the default podTemplate populated by values mentioned above will be excluded in the rendered template.
           # -- Disable the default Jenkins Agent configuration
           disableDefaultAgent: true
-
           # Below is the implementation of custom pod templates for the default configured kubernetes cloud.
           # Add a key under podTemplates for each pod template. Each key (prior to | character) is just a label, and can be any value.
           # Keys are only used to give the pod template a meaningful name. The only restriction is they may only contain RFC 1123 \ DNS label
@@ -262,7 +256,7 @@ spec:
               - name: jenkins-agent-deploy
                 label: deploy
                 serviceAccount: jenkins
-                namespace: default
+                namespace: infra
                 containers:
                 - name: jnlp
                   image: phuoc/jenkins-agent-kubernetes:latest
@@ -271,13 +265,18 @@ spec:
                   envVars:
                   - envVar:
                       key: "JENKINS_URL"
-                      value: "http://jenkins.default.svc.cluster.local:8080/"
-                  ttyEnabled: true
-                  privileged: true
+                      value: "http://jenkins.infra.svc.cluster.local:8080/"
+                  ttyEnabled: false
+                  privileged: false
                   resourceRequestCpu: "200m"
                   resourceRequestMemory: "512Mi"
                   resourceLimitCpu: "1"
                   resourceLimitMemory: "2Gi"
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: infra
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true

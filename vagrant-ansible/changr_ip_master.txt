@@ -1,0 +1,9 @@
+oldip=172.30.152.187
+newip=172.28.71.204
+cd /etc/kubernetes
+# see before
+find . -type f | xargs grep $oldip
+# modify files in place
+find . -type f | xargs sed -i "s/$oldip/$newip/"
+# see after
+find . -type f | xargs grep $newip

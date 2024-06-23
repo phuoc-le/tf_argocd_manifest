@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     chart: mariadb
-    repoURL: registry-1.docker.io/bitnamicharts  # note: the oci:// syntax is not included.
+    repoURL: registry-1.docker.io/bitnamicharts
     targetRevision: 18.2.0
     helm:
       parameters:
@@ -40,4 +40,9 @@ spec:
             FLUSH PRIVILEGES;
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: infra
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true

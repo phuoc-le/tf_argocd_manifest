@@ -9,6 +9,7 @@ pipeline {
         string(name: 'HELM_CHART_REPO', defaultValue: 'https://charts.bitnami.com/bitnami', description: '')
         string(name: 'HELM_CHART_NAME', defaultValue: 'nginx', description: '')
         string(name: 'HELM_CHART_VERSION', defaultValue: '18.1.2', description: '')
+        string(name: 'PARAMS', defaultValue: '--set service.type=ClusterIP', description: '')
     }
     options {
         buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '5'))
@@ -22,6 +23,7 @@ pipeline {
         HELM_CHART_NAME = "$params.HELM_CHART_NAME"
         HELM_CHART_VERSION = "$params.HELM_CHART_VERSION"
         NAMESPACE = "$params.NAMESPACE"
+        PARAMS = "$params.PARAMS"
     }
 
     stages {
@@ -36,13 +38,15 @@ pipeline {
                 script {
                     withKubeConfig([namespace: "$NAMESPACE"]) {
                        def values = params.VALUES
+                       def VALUES_PATH = ""
                        if (values == null || values.trim().isEmpty()) {
-                            sh 'helm upgrade --install $SERVICE_NAME $HELM_CHART_NAME --repo $HELM_CHART_REPO --set service.type=ClusterIP -n $NAMESPACE --create-namespace --version $HELM_CHART_VERSION --wait'
+                            VALUES_PATH = ""
                         } else {
                             sh 'rm -f /tmp/values.yaml'
                             writeFile(file: '/tmp/values.yaml', text: VALUES)
-                            sh 'helm upgrade --install $SERVICE_NAME $HELM_CHART_NAME --repo $HELM_CHART_REPO -f /tmp/values.yaml --set service.type=ClusterIP -n $NAMESPACE --create-namespace --version $HELM_CHART_VERSION  --wait'
+                            VALUES_PATH = "-f /tmp/values.yaml"
                         }
+                       sh 'helm upgrade --install $SERVICE_NAME $HELM_CHART_NAME --repo $HELM_CHART_REPO $VALUES_PATH $PARAMS -n $NAMESPACE --create-namespace --version $HELM_CHART_VERSION  --wait'
                     }
                 }
                 echo "Finish deploy $SERVICE_NAME...."
