@@ -168,6 +168,13 @@
               pathType: Prefix
               tls: true
 
+    - name: Create infra namespace
+      kubernetes.core.k8s:
+        name: infra
+        api_version: v1
+        kind: Namespace
+        state: present
+
     - name: Create a ClusterRole jenkins
       kubernetes.core.k8s:
         state: present

@@ -19,13 +19,6 @@ SCRIPT
 
 Vagrant.configure("2") do |config|
     config.ssh.keep_alive = true
-    config.env.enable
-    # cloud-init script
-    config.vm.cloud_init :user_data do |cloud_init|
-        cloud_init.content_type = "text/cloud-config"
-        cloud_init.path = "cloud-init.yml"
-    end
-
     k8s_cluster.each_with_index do |(hostname, info), index|
         config.vm.define hostname do |k8s_node|
             k8s_node.vm.box = "generic/ubuntu2304"
@@ -35,7 +28,7 @@ Vagrant.configure("2") do |config|
             k8s_node.vm.hostname = "#{info[:hostname]}"
             k8s_node.vm.boot_timeout = 600
             k8s_node.vm.provider :vmware_workstation do |vmware|
-                vmware.gui = true
+                vmware.gui = false
                 vmware.linked_clone = false
                 vmware.ssh_info_public = true
                 vmware.port_forward_network_pause = 0
@@ -61,7 +54,7 @@ Vagrant.configure("2") do |config|
             ansible.vm.hostname = "#{info[:hostname]}"
             ansible.vm.boot_timeout = 600
             ansible.vm.provider :vmware_workstation do |vmware|
-                vmware.gui = true
+                vmware.gui = false
                 vmware.linked_clone = false
                 vmware.ssh_info_public = true
                 vmware.port_forward_network_pause = 1
@@ -69,9 +62,9 @@ Vagrant.configure("2") do |config|
                 vmware.vmx["memsize"] = "#{info[:mem]}"
                 vmware.vmx["numvcpus"] = "#{info[:cpus]}"
             end
-            config.vm.provision "file", source: "./ansible", destination: "~/ansible"
-            config.vm.provision "shell", inline: $install_ansible_script
-            config.vm.provision "shell", inline: "cd ansible && sh ping.sh"
+            ansible.vm.provision "file", source: "./ansible", destination: "~/ansible"
+            ansible.vm.provision "shell", inline: $install_ansible_script
+            ansible.vm.provision "shell", inline: "cd ansible && sh run.sh"
         end # end ansible
     end # end iac_hosts
 end
