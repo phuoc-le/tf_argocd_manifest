@@ -373,6 +373,8 @@
                       GRANT ALL PRIVILEGES ON `phucninh-blog`.* TO 'app'@'%';
                       CREATE DATABASE `strapi`;
                       GRANT ALL PRIVILEGES ON `strapi`.* TO 'app'@'%';
+                      CREATE DATABASE `laravel`;
+                      GRANT ALL PRIVILEGES ON `laravel`.* TO 'app'@'%';
                       FLUSH PRIVILEGES;
             destination:
               server: https://kubernetes.default.svc
@@ -517,6 +519,50 @@
           spec:
             externalIPs: [ "{{ hostvars[inventory_hostname]['ansible_host'] }}" ]
 
+    - name: Create a redis by argocd
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: argoproj.io/v1alpha1
+          kind: Application
+          metadata:
+            name: redis
+            namespace: argocd
+          spec:
+            project: default
+            source:
+              chart: redis
+              repoURL: registry-1.docker.io/bitnamicharts  # note: the oci:// syntax is not included.
+              targetRevision: 19.5.5
+              helm:
+                parameters:
+                  - name: "fullnameOverride"
+                    value: "redis"
+                  - name: "image.tag"
+                    value: '7.2.5'
+                  - name: "architecture"
+                    value: "standalone"
+                  - name: "master.persistence.size"
+                    value: 1Gi
+            destination:
+              server: https://kubernetes.default.svc
+              namespace: infra
+            syncPolicy:
+              syncOptions:
+                - CreateNamespace=true
+              automated:
+                prune: true
+
+    - name: Patch external IP Redis service
+      kubernetes.core.k8s:
+        state: patched
+        kind: Service
+        name: redis-master
+        namespace: infra
+        definition:
+          spec:
+            externalIPs: [ "{{ hostvars[inventory_hostname]['ansible_host'] }}" ]
+
     - name: Create a strapi by argocd
       kubernetes.core.k8s:
         state: present
@@ -599,6 +645,87 @@
               automated:
                 prune: true
 
+    - name: Create a redisinsight by argocd
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: argoproj.io/v1alpha1
+          kind: Application
+          metadata:
+            name: redis-insight
+            namespace: argocd
+          spec:
+            project: default
+            source:
+              chart: redisinsight
+              helm:
+                releaseName: vault
+                parameters:
+                  - name: "fullnameOverride"
+                    value: "redis-insight"
+                  - name: "namespace.name"
+                    value: "infra"
+                  - name: "server.dev.devRootToken"
+                    value: "root"
+                  - name: "csi.enabled"
+                    value: "false"
+              repoURL: https://spy86.github.io/redisinsight
+              targetRevision: 0.1.0
+            destination:
+              namespace: infra
+              server: https://kubernetes.default.svc
+            syncPolicy:
+              syncOptions:
+                - CreateNamespace=true
+              automated:
+                prune: true
+
+
+    - name: Create a meilisearch by argocd
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: argoproj.io/v1alpha1
+          kind: Application
+          metadata:
+            name: meilisearch
+            namespace: argocd
+          spec:
+            project: default
+            source:
+              chart: meilisearch
+              helm:
+                releaseName: meilisearch
+                parameters:
+                  - name: "persistence.enabled"
+                    value: "true"
+                  - name: "persistence.storageClass"
+                    value: "longhorn"
+                  - name: "persistence.size"
+                    value: "1Gi"
+                  - name: "environment.MEILI_ENV"
+                    value: "production"
+              repoURL: https://meilisearch.github.io/meilisearch-kubernetes
+              targetRevision: 0.7.0
+            destination:
+              namespace: infra
+              server: https://kubernetes.default.svc
+            syncPolicy:
+              syncOptions:
+                - CreateNamespace=true
+              automated:
+                prune: true
+
+    - name: Patch external IP meilisearch service
+      kubernetes.core.k8s:
+        state: patched
+        kind: Service
+        name: meilisearch
+        namespace: infra
+        definition:
+          spec:
+            externalIPs: [ "{{ hostvars[inventory_hostname]['ansible_host'] }}" ]
+
     - name: Create a Ingress Infra
       kubernetes.core.k8s:
         state: present
@@ -632,6 +759,9 @@
               - hosts:
                   - activemq.phucninh.pro
                 secretName: activemq-phucninh-pro-tls
+              - hosts:
+                  - meilisearch.phucninh.pro
+                secretName: meilisearch-phucninh-pro-tls
             rules:
               - host: jenkins.phucninh.pro
                 http:
@@ -673,6 +803,16 @@
                           name: activemq
                           port:
                             number: 8161
+              - host: meilisearch.phucninh.pro
+                http:
+                  paths:
+                    - path: /
+                      pathType: Prefix
+                      backend:
+                        service:
+                          name: meilisearch
+                          port:
+                            number: 7700
               - host: sealed.phucninh.pro
                 http:
                   paths:

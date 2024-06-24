@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "redisinsight-chart.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "redisinsight-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "redisinsight-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Release.Name }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Release.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          {{- if .Values.startupProbe -}}
+              {{- with .Values.startupProbe }}
+          startupProbe:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.livenessProbe -}}
+            {{- with .Values.livenessProbe }}
+          livenessProbe:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.readinessProbe -}}
+            {{- with .Values.readinessProbe }}
+          readinessProbe:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.environment }}
+          env:
+          {{- range $name, $value := .Values.environment }}
+            - name: {{ $name }}
+              value: {{ $value }}
+            {{- end }}
+          {{- end }}
+          volumeMounts:
+            - name: db
+              mountPath: {{ .Values.persistence.mountPath | quote }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: db
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}
+        {{ else if .Values.persistence.existingClaim }}
+        - name: db
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim }}
+        {{ else }}
+        - name: db
+          emptyDir: { }
+        {{- end }}
