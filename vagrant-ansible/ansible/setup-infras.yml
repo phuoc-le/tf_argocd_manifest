@@ -27,7 +27,7 @@
         namespace: ingress-nginx
         definition:
           spec:
-            externalIPs: [ "{{ hostvars[inventory_hostname]['ansible_all_ipv4_addresses'][0] }}" ]
+            externalIPs: [ "{{ hostvars[inventory_hostname]['ansible_host'] }}" ]
 
     - name: Add longhorn chart repo
       kubernetes.core.helm_repository:
@@ -391,7 +391,7 @@
         namespace: infra
         definition:
           spec:
-            externalIPs: [ "{{ hostvars[inventory_hostname]['ansible_all_ipv4_addresses'][0] }}" ]
+            externalIPs: [ "{{ hostvars[inventory_hostname]['ansible_host'] }}" ]
 
     - name: Create a phucninh-blog by argocd
       kubernetes.core.k8s:
@@ -515,7 +515,7 @@
         namespace: infra
         definition:
           spec:
-            externalIPs: [ "{{ hostvars[inventory_hostname]['ansible_all_ipv4_addresses'][0] }}" ]
+            externalIPs: [ "{{ hostvars[inventory_hostname]['ansible_host'] }}" ]
 
     - name: Create a strapi by argocd
       kubernetes.core.k8s:

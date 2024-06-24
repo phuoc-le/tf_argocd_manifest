@@ -3,7 +3,7 @@ pipeline {
     agent { node { label 'deploy' } }
     parameters {
         choice(name: 'MODE', choices: ['DEPLOY', 'DELETE'], description: '')
-        string(name: 'SERVICE_NAME', defaultValue: 'nginx', description: '')
+        string(name: 'SERVICE_NAME', defaultValue: 'demo-app', description: '')
         text(name: 'VALUES', defaultValue: '', description: 'Values file for helm chart')
         string(name: 'NAMESPACE', defaultValue: 'default', description: '')
         string(name: 'HELM_CHART_REPO', defaultValue: 'https://charts.bitnami.com/bitnami', description: '')
