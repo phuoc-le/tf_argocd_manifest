@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redis-insight
+  namespace: argocd
+spec:
+  project: default
+  source:
+    path: redis-insight/chart
+    repoURL: https://github.com/phuoc-le/tf_argocd_manifest.git
+    targetRevision: HEAD
+    helm:
+      parameters:
+        - name: "ienvironment.RITRUSTEDORIGINS"
+          value: "https://redis-insight.phucninh.pro"
+  destination:
+    namespace: infra
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true

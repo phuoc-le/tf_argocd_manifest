@@ -751,8 +751,8 @@
                   - minio.phucninh.pro
                 secretName: minio-phucninh-pro-tls
               - hosts:
-                  - sealed.phucninh.pro
-                secretName: sealed-phucninh-pro-tls
+                  - redis-insight.phucninh.pro
+                secretName: redis-insight-phucninh-pro-tls
               - hosts:
                   - vault.phucninh.pro
                 secretName: vault-phucninh-pro-tls
@@ -813,16 +813,16 @@
                           name: meilisearch
                           port:
                             number: 7700
-              - host: sealed.phucninh.pro
+              - host: redis-insight.phucninh.pro
                 http:
                   paths:
                     - path: /
                       pathType: Prefix
                       backend:
                         service:
-                          name: sealed-secrets
+                          name: redis-insight
                           port:
-                            number: 8080
+                            number: 5000
               - host: vault.phucninh.pro
                 http:
                   paths:

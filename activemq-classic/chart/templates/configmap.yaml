@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  ACTIVEMQ: 'activemq'
+  ACTIVEMQ_FRAME_SIZE: '200'
+  ACTIVEMQ_MAX_MEMORY: '4096'
+  ACTIVEMQ_MIN_MEMORY: '512'
+  ACTIVEMQ_BROKER_NAME: 'localhost'
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+      {{- include "activemq.labels" . | nindent 4 }}

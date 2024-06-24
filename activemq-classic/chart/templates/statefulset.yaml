@@ -1,0 +1,148 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+      {{- include "activemq.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "activemq.labels" . | nindent 6 }}
+  serviceName: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        {{- include "activemq.labels" . | nindent 8}}
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}
+            - secretRef:
+                name: {{ .Release.Name }}
+        {{- if .Values.environment }}
+        - env:
+          {{- range $name, $value := .Values.environment }}
+            - name: {{ $name | quote }}
+              value: {{ $value | quote }}
+          {{- end }}
+        {{- end }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          name: {{ .Release.Name }}
+          ports:
+          {{- range .Values.service.ports }}
+            - containerPort: {{ .targetPort }}
+              protocol: {{ .protocol }}
+              name: {{ .name }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          startupProbe:
+            httpGet:
+              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName="localhost",service=Health
+              port: web
+              scheme: HTTP
+              httpHeaders:
+                - name: Authorization
+                  value: Basic {{ include "activemq.authentication" . | b64enc }}
+            timeoutSeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName="localhost",service=Health
+              port: web
+              scheme: HTTP
+              httpHeaders:
+                - name: Authorization
+                  value: Basic {{ include "activemq.authentication" . | b64enc }}
+            timeoutSeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /api/jolokia/read/org.apache.activemq:type=Broker,brokerName="localhost",service=Health
+              port: web
+              scheme: HTTP
+              httpHeaders:
+                - name: Authorization
+                  value: Basic {{ include "activemq.authentication" . | b64enc }}
+            timeoutSeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 5
+          volumeMounts:
+            - mountPath: "/var/log/activemq"
+              name: logs
+            - mountPath: "/opt/apache-activemq/data"
+              name: {{ template "activemq.uname" . }}
+            - mountPath: "/opt/apache-activemq/conf/users.properties"
+              name: user-conf
+              subPath: users.properties
+      dnsPolicy: ClusterFirst
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      restartPolicy: Always
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      schedulerName: default-scheduler
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 12 }}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - emptyDir: {}
+          name: logs
+        - name: user-conf
+          secret:
+            secretName: {{ .Release.Name }}
+            items:
+              - key: users.properties
+                path: users.properties
+  updateStrategy:
+    type: {{ .Values.updateStrategy }}
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ template "activemq.uname" . }}
+    {{- if .Values.persistence.labels.enabled }}
+        labels:
+        {{- include "activemq.labels" . | nindent 10 }}
+    {{- end }}
+    {{- with .Values.persistence.annotations  }}
+        annotations:
+  {{ toYaml . | indent 8 }}
+    {{- end }}
+      spec:
+        accessModes:
+      {{- range .Values.persistence.accessModes }}
+          - {{ . | quote }}
+      {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | quote }}
+    {{- if .Values.persistence.storageClass }}
+    {{- if (eq "-" .Values.persistence.storageClass) }}
+        storageClassName: ""
+    {{- else }}
+        storageClassName: "{{ .Values.persistence.storageClass }}"
+    {{- end }}
+    {{- end }}
+  {{- end }}

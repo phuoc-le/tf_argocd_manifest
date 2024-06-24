@@ -29,7 +29,6 @@ spec:
           value: "1Gi"
         - name: "service.type"
           value: "ClusterIP"
-
   destination:
     server: https://kubernetes.default.svc
     namespace: default

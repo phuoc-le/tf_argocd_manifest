@@ -33,7 +33,7 @@ securityContext:
 
 service:
   type: ClusterIP
-  port: 5000
+  port: 5540
 
 ingress:
   enabled: false
