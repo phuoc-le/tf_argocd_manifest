@@ -544,6 +544,8 @@
                     value: "standalone"
                   - name: "master.persistence.size"
                     value: 1Gi
+                  - name: "auth.enabled"
+                    value: "false"
             destination:
               server: https://kubernetes.default.svc
               namespace: infra
@@ -657,20 +659,13 @@
           spec:
             project: default
             source:
-              chart: redisinsight
+              path: redis-insight/chart
+              repoURL: https://github.com/phuoc-le/tf_argocd_manifest.git
+              targetRevision: HEAD
               helm:
-                releaseName: vault
                 parameters:
-                  - name: "fullnameOverride"
-                    value: "redis-insight"
-                  - name: "namespace.name"
-                    value: "infra"
-                  - name: "server.dev.devRootToken"
-                    value: "root"
-                  - name: "csi.enabled"
-                    value: "false"
-              repoURL: https://spy86.github.io/redisinsight
-              targetRevision: 0.1.0
+                  - name: "environment.RITRUSTEDORIGINS"
+                    value: "https://redis-insight.phucninh.pro"
             destination:
               namespace: infra
               server: https://kubernetes.default.svc
@@ -679,7 +674,6 @@
                 - CreateNamespace=true
               automated:
                 prune: true
-
 
     - name: Create a meilisearch by argocd
       kubernetes.core.k8s:
@@ -822,7 +816,7 @@
                         service:
                           name: redis-insight
                           port:
-                            number: 5000
+                            number: 5540
               - host: vault.phucninh.pro
                 http:
                   paths:

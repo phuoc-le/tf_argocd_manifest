@@ -91,6 +91,5 @@ persistence:
     - ReadWriteOnce
   size: 100Mi
 
-environment:
-  RITRUSTEDORIGINS: 'https://redis-insight.phucninh.pro'
+environment: {}
 
