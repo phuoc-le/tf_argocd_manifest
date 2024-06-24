@@ -1,0 +1,27 @@
+- hosts: all
+  become: yes
+  vars:
+    USERNAME: 'ubuntu'
+    PASSWORD: '123456'
+  tasks:
+  - name: "Add {{ USERNAME }} user"
+    user:
+      name: "{{ USERNAME }}"
+      password: "{{ PASSWORD }}"
+      shell: /bin/bash
+      groups: sudo
+      append: true
+      state: present
+      createhome: true
+      home: "/home/{{ USERNAME }}"
+
+  - name: "allow {{ USERNAME }} to have passwordless sudo"
+    lineinfile:
+      dest: /etc/sudoers
+      line: "{{ USERNAME }} ALL=(ALL) NOPASSWD: ALL"
+      validate: 'visudo -cf %s'
+
+  - name: "set up authorized keys for the {{ USERNAME }} user"
+    authorized_key: "user={{ USERNAME }} key={{ item }}"
+    with_file:
+      - ./ssh_keys/public_key.pub

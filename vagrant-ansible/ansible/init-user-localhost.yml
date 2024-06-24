@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: localhost
   become: yes
   vars:
     USERNAME: 'ubuntu'
@@ -8,10 +8,12 @@
     user:
       name: "{{ USERNAME }}"
       password: "{{ PASSWORD }}"
+      shell: /bin/bash
       groups: sudo
       append: true
       state: present
       createhome: true
+      home: "/home/{{ USERNAME }}"
 
   - name: "allow {{ USERNAME }} to have passwordless sudo"
     lineinfile:

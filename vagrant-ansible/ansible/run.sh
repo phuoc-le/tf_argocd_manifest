@@ -4,7 +4,7 @@ rm -f ~/.ssh/known_hosts
 
 export ANSIBLE_HOST_KEY_CHECKING=False
 
-ansible-playbook -i hosts initial.yml
+ansible-playbook -i hosts init-user.yml
 
 ansible-playbook -i hosts kube-dependencies.yml
 
