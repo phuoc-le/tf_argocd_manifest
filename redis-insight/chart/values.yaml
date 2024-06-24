@@ -91,6 +91,6 @@ persistence:
     - ReadWriteOnce
   size: 100Mi
 
-environment: {}
-#  RITRUSTEDORIGINS: 'http://localhost'
+environment:
+  RITRUSTEDORIGINS: 'https://redis-insight.phucninh.pro'
 
