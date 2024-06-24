@@ -65,12 +65,14 @@ Vagrant.configure("2") do |config|
                 vmware.vmx["memsize"] = "#{info[:mem]}"
                 vmware.vmx["numvcpus"] = "#{info[:cpus]}"
             end
-            ansible.vm.provision "file", source: "./ansible", destination: "~/ansible"
-            ansible.vm.provision "shell", inline: $install_ansible_script
-            ansible.vm.provision "shell", inline: "cd ansible && sh run.sh"
+            ansible.vm.provision "shell", inline: $install_ansible_script, privileged: true
             ansible.vm.provision "file", source: "./local-ansible/.", destination: "~/"
-            ansible.vm.provision "shell", inline: "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook init-user-localhost.yml"
-            ansible.vm.provision "shell", inline: "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook copy-kubeconfig.yml"
+            ansible.vm.provision "shell", inline: "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook disable-check-host.yml", privileged: true
+            ansible.vm.provision "shell", inline: "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook disable-check-host.yml", privileged: false
+            ansible.vm.provision "shell", inline: "ansible-playbook init-user-localhost.yml", privileged: false
+            ansible.vm.provision "shell", inline: "ansible-playbook copy-kubeconfig.yml", privileged: false
+            ansible.vm.provision "file", source: "./ansible", destination: "~/ansible"
+            ansible.vm.provision "shell", inline: "cd ansible && sh run.sh", privileged: false
         end # end ansible
     end # end iac_hosts
 end

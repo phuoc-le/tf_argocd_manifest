@@ -1,0 +1,11 @@
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: Adding the path in the bashrc files
+      lineinfile:
+        dest: "{{ lookup('env', 'HOME') }}/.bashrc"
+        line: "export ANSIBLE_HOST_KEY_CHECKING=False"
+        state: "present"
+
+    - name: Source the bashrc file
+      shell: "exec bash && . {{ lookup('env', 'HOME') }}/.bashrc"

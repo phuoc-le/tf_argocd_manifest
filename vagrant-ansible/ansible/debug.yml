@@ -1,5 +1,0 @@
-- hosts: kubeadm-master
-  tasks:
-    - name: Debug
-      debug:
-        var: hostvars[inventory_hostname]['ansible_host']
