@@ -1,0 +1,25 @@
+masters:
+  hosts:
+    kubeadm-master:
+      ansible_host: 172.16.0.90
+      ansible_user: vagrant
+      ansible_password: vagrant
+      ansible_sudo_pass: vagrant
+
+workers:
+  hosts:
+    kubeadm-worker-1:
+      ansible_host: 172.16.0.91
+      ansible_user: vagrant
+      ansible_password: vagrant
+      ansible_sudo_pass: vagrant
+    kubeadm-worker-2:
+      ansible_host: 172.16.0.92
+      ansible_user: vagrant
+      ansible_password: vagrant
+      ansible_sudo_pass: vagrant
+    kubeadm-worker-3:
+      ansible_host: 172.16.0.93
+      ansible_user: vagrant
+      ansible_password: vagrant
+      ansible_sudo_pass: vagrant

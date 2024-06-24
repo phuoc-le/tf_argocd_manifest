@@ -2,4 +2,4 @@
 
 export ANSIBLE_HOST_KEY_CHECKING=False
 
-ansible-playbook -i hosts kube-upgrade.yml
+ansible-playbook -i inventory.yml kube-upgrade.yml
