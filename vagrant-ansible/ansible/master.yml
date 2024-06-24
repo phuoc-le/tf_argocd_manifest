@@ -60,3 +60,9 @@
       kubernetes.core.k8s:
         state: present
         src: /tmp/calico.yaml
+
+    - name: Copy remote kubeconfig file into ansible machine
+      fetch:
+        src: "/home/{{ ansible_user }}/.kube/config"
+        dest: "./config"
+        flat: yes

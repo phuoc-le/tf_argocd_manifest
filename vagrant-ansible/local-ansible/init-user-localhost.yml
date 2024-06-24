@@ -24,4 +24,4 @@
   - name: "set up authorized keys for the {{ USERNAME }} user"
     authorized_key: "user={{ USERNAME }} key={{ item }}"
     with_file:
-      - ./ssh_keys/public_key.pub
+      - ./ansible/ssh_keys/public_key.pub
