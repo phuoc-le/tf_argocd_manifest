@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     chart: pgadmin4
-    repoURL: https://helm.runix.net  # note: the oci:// syntax is not included.
+    repoURL: https://helm.runix.net
     targetRevision: 1.25.3
     helm:
       parameters:

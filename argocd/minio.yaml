@@ -24,15 +24,17 @@ spec:
         - name: "mode"
           value: "standalone"
         - name: "bucketRoot"
-          value: "test"
+          value: "data"
         - name: "rootUser"
-          value: "admin"
+          value: "admin@phucninh.pro"
           forceString: true
         - name: "rootPassword"
-          value: "W7pUCoEWEs"
+          value: "LHPkttlhp123"
           forceString: true
         - name: "persistence.storageClass"
           value: "longhorn"
+        - name: "mountPath"
+          value: "/data"
         - name: "persistence.size"
           value: "1Gi"
         - name: "resources.requests.memory"
@@ -45,6 +47,10 @@ spec:
           fsGroup: 0
           fsGroupChangePolicy: "OnRootMismatch"
           readOnlyRootFilesystem: false
+        users:
+          - accessKey: 4Srhkmgzbu44a7WvC6Wa
+            secretKey: GX7wRO0MfoUacVT5BrUd4mVzvyhTgcR3JeJkX8eP
+            policy: consoleAdmin
   destination:
     server: https://kubernetes.default.svc
     namespace: infra
@@ -53,3 +59,4 @@ spec:
       - CreateNamespace=true
     automated:
       prune: true
+      selfHeal: true

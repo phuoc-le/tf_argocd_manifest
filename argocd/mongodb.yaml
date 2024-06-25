@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     chart: mongodb
-    repoURL: registry-1.docker.io/bitnamicharts  # note: the oci:// syntax is not included.
+    repoURL: registry-1.docker.io/bitnamicharts
     targetRevision: 15.6.0
     helm:
       parameters:
@@ -19,7 +19,7 @@ spec:
           value: "123456"
           forceString: true
         - name: "auth.usernames[0]"
-          value: "superuser"
+          value: "app"
         - name: "auth.passwords[0]"
           value: "123456"
           forceString: true
@@ -31,4 +31,10 @@ spec:
           value: "ClusterIP"
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: infra
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true

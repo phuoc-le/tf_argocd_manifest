@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     chart: "openldap-stack-ha"
-    repoURL: "https://jp-gouin.github.io/helm-openldap"  # note: the oci:// syntax is not included.
+    repoURL: "https://jp-gouin.github.io/helm-openldap"
     targetRevision: 4.2.5
     helm:
       parameters:

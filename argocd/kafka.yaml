@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     chart: kafka
-    repoURL: registry-1.docker.io/bitnamicharts  # note: the oci:// syntax is not included.
+    repoURL: registry-1.docker.io/bitnamicharts
     targetRevision: 29.0.3
     helm:
       parameters:
@@ -39,3 +39,4 @@ spec:
       - CreateNamespace=true
     automated:
       prune: true
+      selfHeal: true

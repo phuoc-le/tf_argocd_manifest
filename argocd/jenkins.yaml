@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     chart: "jenkins"
-    repoURL: "https://charts.jenkins.io"  # note: the oci:// syntax is not included.
+    repoURL: "https://charts.jenkins.io"
     targetRevision: 5.1.23
     helm:
       valuesObject:
@@ -26,6 +26,7 @@ spec:
             - git:5.2.2
             - configuration-as-code:1810.v9b_c30a_249a_4c
             - kubernetes-cli:1.12.1
+            - hashicorp-vault-plugin:368.v48134f694db_f
         persistence:
           size: 2Gi
         agent:
@@ -280,3 +281,4 @@ spec:
       - CreateNamespace=true
     automated:
       prune: true
+      selfHeal: true
