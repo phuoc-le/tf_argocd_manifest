@@ -675,6 +675,66 @@
               automated:
                 prune: true
 
+    - name: Create a minio by argocd
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: argoproj.io/v1alpha1
+          kind: Application
+          metadata:
+            name: minio
+            namespace: argocd
+          spec:
+            project: default
+            source:
+              chart: minio
+              repoURL: https://charts.min.io
+              targetRevision: 5.2.0
+              helm:
+                parameters:
+                  - name: "image.repository"
+                    value: "minio/minio"
+                  - name: "image.tag"
+                    value: "latest"
+                  - name: "mcImage.repository"
+                    value: "minio/minio"
+                  - name: "mcImage.tag"
+                    value: "latest"
+                  - name: "replicas"
+                    value: "1"
+                  - name: "mode"
+                    value: "standalone"
+                  - name: "bucketRoot"
+                    value: "test"
+                  - name: "rootUser"
+                    value: "admin"
+                    forceString: true
+                  - name: "rootPassword"
+                    value: "W7pUCoEWEs"
+                    forceString: true
+                  - name: "persistence.storageClass"
+                    value: "longhorn"
+                  - name: "persistence.size"
+                    value: "1Gi"
+                  - name: "resources.requests.memory"
+                    value: "500Mi"
+                valuesObject:
+                  securityContext:
+                    enabled: true
+                    runAsUser: 0
+                    runAsGroup: 0
+                    fsGroup: 0
+                    fsGroupChangePolicy: "OnRootMismatch"
+                    readOnlyRootFilesystem: false
+            destination:
+              server: https://kubernetes.default.svc
+              namespace: infra
+            syncPolicy:
+              syncOptions:
+                - CreateNamespace=true
+              automated:
+                prune: true
+
     - name: Create a meilisearch by argocd
       kubernetes.core.k8s:
         state: present
@@ -840,9 +900,9 @@
                       pathType: Prefix
                       backend:
                         service:
-                          name: console
+                          name: minio-console
                           port:
-                            number: 9090
+                            number: 9001
               - host: activemq.phucninh.pro
                 http:
                   paths:
