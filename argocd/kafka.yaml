@@ -33,4 +33,9 @@ spec:
           value: "1Gi"
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: infra
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true

@@ -724,6 +724,62 @@
       kubernetes.core.k8s:
         state: present
         definition:
+          apiVersion: argoproj.io/v1alpha1
+          kind: Application
+          metadata:
+            name: kafka
+            namespace: argocd
+          spec:
+            project: default
+            source:
+              chart: kafka
+              repoURL: registry-1.docker.io/bitnamicharts  # note: the oci:// syntax is not included.
+              targetRevision: 29.0.3
+              helm:
+                parameters:
+                  - name: "sasl.interbroker.password"
+                    value: "123456"
+                    forceString: true
+                  - name: "sasl.controller.password"
+                    value: "123456"
+                    forceString: true
+                  - name: "sasl.client.passwords"
+                    value: "123456"
+                    forceString: true
+                  - name: "kraft.clusterId"
+                    value: "123456"
+                    forceString: true
+                  - name: "controller.replicaCount"
+                    value: "1"
+                  - name: "controller.persistence.size"
+                    value: "1Gi"
+                  - name: "broker.replicaCount"
+                    value: "1"
+                  - name: "broker.persistence.size"
+                    value: "1Gi"
+            destination:
+              server: https://kubernetes.default.svc
+              namespace: infra
+            syncPolicy:
+              syncOptions:
+                - CreateNamespace=true
+              automated:
+                prune: true
+
+    - name: Patch external IP kafka service
+      kubernetes.core.k8s:
+        state: patched
+        kind: Service
+        name: kafka
+        namespace: infra
+        definition:
+          spec:
+            externalIPs: [ "{{ hostvars[inventory_hostname]['ansible_host'] }}" ]
+
+    - name: Create a Ingress Infra
+      kubernetes.core.k8s:
+        state: present
+        definition:
           apiVersion: networking.k8s.io/v1
           kind: Ingress
           metadata:
