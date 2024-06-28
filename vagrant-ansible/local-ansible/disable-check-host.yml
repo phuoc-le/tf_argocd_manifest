@@ -1,5 +1,7 @@
 - hosts: localhost
   become: yes
+  vars:
+    USERNAME: 'ubuntu'
   tasks:
     - name: Adding the path in the bashrc files
       lineinfile:

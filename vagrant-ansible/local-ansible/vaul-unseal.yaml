@@ -1,0 +1,28 @@
+- hosts: localhost
+  vars:
+    VAULT_KEY_1: 'xOVWr4OtVw4IPewgn/4ilP1ASjtoIGQh9q5vLsca/Axt'
+    VAULT_KEY_2: '0M7rKcqXk5BijyRL+ro3ACarj+I9yZLV3kFZsCVFnW8Y'
+    VAULT_KEY_3: 'DYXGLa6BGCU87F+IAhDFrOmfl+qfBUCnLF+rxoGvpgKE'
+  tasks:
+    - name: Wait till vault is created
+      kubernetes.core.k8s_info:
+        kind: Pod
+        wait: yes
+        name: vault-0
+        namespace: infra
+        wait_sleep: 10
+        wait_timeout: 60
+      register: vault_pod_info
+      ignore_errors: True
+
+    - name: Init token vault
+      kubernetes.core.k8s_exec:
+        namespace: infra
+        pod: vault-0
+        command: "vault operator unseal {{ item }}"
+      loop:
+        - VAULT_KEY_1
+        - VAULT_KEY_2
+        - VAULT_KEY_3
+      ignore_errors: True
+      when: vault_pod_info.failed == true

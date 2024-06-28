@@ -1,0 +1,40 @@
+pipeline {
+
+    agent { node { label 'deploy' } }
+    parameters {
+        string(name: 'SERVICE', defaultValue: 'vault', description: '', trim: true)
+        string(name: 'NAMESPACE', defaultValue: 'infra', description: '', trim: true)
+        string(name: 'VAULT_KEY_1', defaultValue: 'xOVWr4OtVw4IPewgn/4ilP1ASjtoIGQh9q5vLsca/Axt', description: '', trim: true)
+        string(name: 'VAULT_KEY_2', defaultValue: '0M7rKcqXk5BijyRL+ro3ACarj+I9yZLV3kFZsCVFnW8Y', description: '', trim: true)
+        string(name: 'VAULT_KEY_3', defaultValue: 'DYXGLa6BGCU87F+IAhDFrOmfl+qfBUCnLF+rxoGvpgKE', description: '', trim: true)
+    }
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '5'))
+        disableResume()
+    }
+    environment {
+        SERVICE = "$params.SERVICE"
+        NAMESPACE = "$params.NAMESPACE"
+        VAULT_KEY_1 = "$params.VAULT_KEY_1"
+        VAULT_KEY_2 = "$params.VAULT_KEY_2"
+        VAULT_KEY_3 = "$params.VAULT_KEY_3"
+    }
+
+    stages {
+        stage('Unseal Vault') {
+            steps {
+                echo "Start patching ...."
+                script {
+                    withKubeConfig([namespace: "$NAMESPACE"]) {
+                      sh '''
+                        kubectl exec -it ${SERVICE}-0 -n $NAMESPACE -- vault operator unseal $VAULT_KEY_1
+                        kubectl exec -it ${SERVICE}-0 -n $NAMESPACE -- vault operator unseal $VAULT_KEY_2
+                        kubectl exec -it ${SERVICE}-0 -n $NAMESPACE -- vault operator unseal $VAULT_KEY_3
+                      '''
+                    }
+                }
+                echo "Finish patching ...."
+            }
+        }
+    }
+}

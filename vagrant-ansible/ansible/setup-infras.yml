@@ -655,6 +655,16 @@
               automated:
                 prune: true
                 selfHeal: true
+                
+    - name: Patch external IP vault service
+      kubernetes.core.k8s:
+        state: patched
+        kind: Service
+        name: vault
+        namespace: infra
+        definition:
+          spec:
+            externalIPs: [ "{{ hostvars[inventory_hostname]['ansible_host'] }}" ]
 
     - name: Create a redisinsight by argocd
       kubernetes.core.k8s:
