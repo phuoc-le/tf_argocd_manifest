@@ -129,7 +129,7 @@ persistence:
   accessMode: ReadWriteOnce
   existingClaim: ""
   storageClass: ""
-  size: 3Gi
+  size: 1Gi
   mountPath: "/opt/app/src"
 env:
   configmap:

@@ -17,6 +17,8 @@ spec:
           value: "IfNotPresent"
         - name: "image.tag"
           value: "latest"
+        - name: "persistence.size"
+          value: "1Gi"
         - name: "env.configmap.DATABASE_CLIENT"
           value: "mysql2"
         - name: "env.configmap.DATABASE_HOST"

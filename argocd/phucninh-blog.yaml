@@ -30,7 +30,7 @@ spec:
         - name: service.type
           value: 'ClusterIP'
         - name: persistence.size
-          value: '3Gi'
+          value: '1Gi'
         - name: mariadb.enabled
           value: 'false'
         - name: externalDatabase.host

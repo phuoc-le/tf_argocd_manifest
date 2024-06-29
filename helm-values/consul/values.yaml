@@ -97,7 +97,7 @@ global:
   # register as. This can't be changed once the Consul cluster is up and running
   # since Consul doesn't support an automatic way to change this value currently:
   # https://github.com/hashicorp/consul/issues/1858.
-  datacenter: dc1
+  datacenter: dc
 
   # Controls whether pod security policies are created for the Consul components
   # created by this chart. Refer to https://kubernetes.io/docs/concepts/policy/pod-security-policy/.
