@@ -34,11 +34,15 @@ spec:
         - name: "phpldapadmin.ingress.enabled"
           value: "false"
         - name: "initTLSSecret.tls_enabled"
-          value: "true"
-        - name: "initTLSSecret.secret"
-          value: "openldap-tls"
+          value: "false"
         - name: "env.LDAP_ENABLE_TLS"
           value: "no"
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: infra
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true

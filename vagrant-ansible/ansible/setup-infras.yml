@@ -655,7 +655,7 @@
               automated:
                 prune: true
                 selfHeal: true
-                
+
     - name: Patch external IP vault service
       kubernetes.core.k8s:
         state: patched
@@ -916,6 +916,32 @@
           spec:
             externalIPs: [ "{{ hostvars[inventory_hostname]['ansible_host'] }}" ]
 
+    - name: Create a Ingress Longhorn
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: longhorn-ingress
+            namespace: longhorn-system
+          spec:
+            ingressClassName: nginx
+            tls:
+              - hosts:
+                  - longhorn.phucninh.pro
+                secretName: longhorn-phucninh-pro-tls
+            rules:
+              - http:
+                  paths:
+                    - path: /
+                      pathType: Prefix
+                      backend:
+                        service:
+                          name: longhorn-frontend
+                          port:
+                            number: 80
+
     - name: Create a Ingress Infra
       kubernetes.core.k8s:
         state: present
@@ -952,6 +978,9 @@
               - hosts:
                   - meilisearch.phucninh.pro
                 secretName: meilisearch-phucninh-pro-tls
+              - hosts:
+                  - consul.phucninh.pro
+                secretName: consul-phucninh-pro-tls
             rules:
               - host: jenkins.phucninh.pro
                 http:
@@ -1041,6 +1070,17 @@
                       backend:
                         service:
                           name: openldap-phpldapadmin
+                          port:
+                            number: 80
+
+              - host: consul.phucninh.pro
+                http:
+                  paths:
+                    - path: /
+                      pathType: Prefix
+                      backend:
+                        service:
+                          name: consul-consul-ui
                           port:
                             number: 80
 
