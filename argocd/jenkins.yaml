@@ -49,7 +49,7 @@ spec:
             # -- Repository to pull the agent jnlp image from
             repository: "phuoc/jenkins-agent-kubernetes"
             # -- Tag of the image to pull
-            tag: "latest"
+            tag: "v1.1.0"
           # -- Configure working directory for default agent
           workingDir: "/home/jenkins/agent"
           nodeUsageMode: "NORMAL"
@@ -261,7 +261,7 @@ spec:
                 namespace: infra
                 containers:
                 - name: jnlp
-                  image: phuoc/jenkins-agent-kubernetes:latest
+                  image: phuoc/jenkins-agent-kubernetes:v1.1.0
                   command:
                   args: "^${computer.jnlpmac} ^${computer.name}"
                   envVars:

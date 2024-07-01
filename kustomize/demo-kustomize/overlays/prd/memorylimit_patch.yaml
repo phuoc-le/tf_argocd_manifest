@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-kustomize
+  namespace: default  
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+        - name: demo-kustomize
+          resources:
+            limits:
+              memory: 1250Mi
+            requests:
+              memory: 1250Mi
+          env:
+          - name: MEM_TOTAL_MB
+            valueFrom:
+              resourceFieldRef:
+                resource: limits.memory

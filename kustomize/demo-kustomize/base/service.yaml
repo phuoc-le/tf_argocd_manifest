@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-kustomize
+  namespace: default
+  labels:
+    app: demo-kustomize
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: demo-kustomize
+  type: ClusterIP

@@ -1,0 +1,47 @@
+pipeline {
+
+    agent { node { label 'deploy' } }
+    parameters {
+        string(name: 'SERVICE_NAME', defaultValue: 'demo-kustomize', description: '')
+        string(name: 'NAMESPACE', defaultValue: 'default', description: '')
+        string(name: 'BRANCH', defaultValue: 'main', description: '')
+    }
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '5'))
+        disableResume()
+    }
+    environment {
+        BUILD_ENV = "dev"
+        SERVICE_NAME = "$params.SERVICE_NAME"
+        PORT = 80
+        NAMESPACE = "$params.NAMESPACE"
+        BRANCH = "$params.BRANCH"
+        GIT_REPO_URL = 'https://github.com/phuoc-le/tf_argocd_manifest.git'
+        CREDENTIALS_ID = 'github'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo "Checkout git repository..."
+                script {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "$BRANCH"]],
+                        userRemoteConfigs: [[credentialsId: "", url: "$GIT_REPO_URL"]]
+                    ])
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo "Start deploy $SERVICE_NAME...."
+                script {
+                    sh 'cd kustomize/${SERVICE_NAME} && kustomize build overlays/${BUILD_ENV}'
+                }
+                echo "Finish deploy $SERVICE_NAME...."
+            }
+        }
+    }
+
+}

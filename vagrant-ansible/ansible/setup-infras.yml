@@ -259,7 +259,7 @@
                     jnlpregistry:
                     image:
                       repository: "phuoc/jenkins-agent-kubernetes"
-                      tag: "latest"
+                      tag: "v1.1.0"
                     workingDir: "/home/jenkins/agent"
                     nodeUsageMode: "NORMAL"
                     customJenkinsLabels: []
@@ -310,7 +310,7 @@
                           namespace: infra
                           containers:
                           - name: jnlp
-                            image: phuoc/jenkins-agent-kubernetes:v1.0.0
+                            image: phuoc/jenkins-agent-kubernetes:v1.1.0
                             command:
                             args: "^${computer.jnlpmac} ^${computer.name}"
                             envVars:

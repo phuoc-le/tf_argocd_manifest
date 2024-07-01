@@ -37,7 +37,9 @@
         src: /etc/kubernetes/admin.conf
         dest: "/home/{{ ansible_user }}/.kube/config"
         remote_src: yes
+        group: "{{ ansible_user }}"
         owner: "{{ ansible_user }}"
+        mode: '0400'
 
     - name: "copy admin.conf to {{ USERNAME }}'s kube config"
       become: yes
@@ -47,6 +49,7 @@
         remote_src: yes
         owner: "{{ USERNAME }}"
         group: "{{ USERNAME }}"
+        mode: '0400'
 
     - name: Download calico network manifest to the cluster.
       become_user: "{{ ansible_user }}"

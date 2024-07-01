@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-kustomize
+  namespace: default
+  labels:
+    app: demo-kustomize
+spec:
+  selector:
+    matchLabels:
+      app: demo-kustomize
+  template:
+    metadata:
+      labels:
+        app: demo-kustomize
+    spec:
+      containers:
+        - name: demo-kustomize
+          image: nginx:latest
+          ports:
+            - containerPort: 80
