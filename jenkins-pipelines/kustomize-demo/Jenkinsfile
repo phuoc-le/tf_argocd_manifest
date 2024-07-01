@@ -2,6 +2,8 @@ pipeline {
 
     agent { node { label 'deploy' } }
     parameters {
+        choice(name: 'MODE', choices: ['DEPLOY', 'DELETE'], description: '')
+        choice(name: 'BUILD_ENV', choices: ['dev', 'sit', 'prd', 'uat'], description: '')
         string(name: 'SERVICE_NAME', defaultValue: 'demo-kustomize', description: '')
         string(name: 'NAMESPACE', defaultValue: 'default', description: '')
         string(name: 'BRANCH', defaultValue: 'main', description: '')
@@ -11,7 +13,7 @@ pipeline {
         disableResume()
     }
     environment {
-        BUILD_ENV = "dev"
+        BUILD_ENV = "$params.BUILD_ENV"
         SERVICE_NAME = "$params.SERVICE_NAME"
         PORT = 80
         NAMESPACE = "$params.NAMESPACE"
@@ -34,14 +36,35 @@ pipeline {
             }
         }
         stage('Deploy') {
+            when {
+                anyOf {
+                    environment name: 'MODE', value: 'DEPLOY'
+                }
+            }
             steps {
-                echo "Start deploy $SERVICE_NAME...."
+                echo "Start deploying $SERVICE_NAME...."
                 script {
                     withKubeConfig([namespace: "$NAMESPACE"]) {
-                        sh 'cd kustomize/${SERVICE_NAME} && kustomize build overlays/${BUILD_ENV} | kubectl apply -f -'
+                        sh 'cd kustomize/${SERVICE_NAME} && kubectl apply -k overlays/${BUILD_ENV}'
                     }
                 }
-                echo "Finish deploy $SERVICE_NAME...."
+                echo "Finish deploying $SERVICE_NAME...."
+            }
+        }
+        stage('Delete') {
+            when {
+                anyOf {
+                    environment name: 'MODE', value: 'DELETE'
+                }
+            }
+            steps {
+                echo "Start deleting $SERVICE_NAME...."
+                script {
+                    withKubeConfig([namespace: "$NAMESPACE"]) {
+                        sh 'cd kustomize/${SERVICE_NAME} && kustomize build overlays/${BUILD_ENV} | kubectl delete -f -'
+                    }
+                }
+                echo "Finish deleting $SERVICE_NAME...."
             }
         }
     }

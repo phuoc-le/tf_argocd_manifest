@@ -6,5 +6,5 @@ kind: Kustomization
 patches:
   - path: healthcheck_patch.yaml
   - path: memorylimit_patch.yaml
-configurations:
-  - configuration.yaml
+#configurations:
+#  - configuration.yaml
