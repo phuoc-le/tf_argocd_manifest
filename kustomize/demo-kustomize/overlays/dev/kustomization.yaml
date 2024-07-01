@@ -1,8 +1,8 @@
 resources:
 - ../../base
 namePrefix: dev-
-patchesStrategicMerge:
-- healthcheck_patch.yaml
-- memorylimit_patch.yaml
-#configurations:
-#  - configuration.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+patches:
+- path: healthcheck_patch.yaml
+- path: memorylimit_patch.yaml
