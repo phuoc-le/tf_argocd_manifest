@@ -37,7 +37,9 @@ pipeline {
             steps {
                 echo "Start deploy $SERVICE_NAME...."
                 script {
-                    sh 'cd kustomize/${SERVICE_NAME} && kustomize build overlays/${BUILD_ENV}'
+                    withKubeConfig([namespace: "$NAMESPACE"]) {
+                        sh 'cd kustomize/${SERVICE_NAME} && kustomize build overlays/${BUILD_ENV} | kubectl apply -f -'
+                    }
                 }
                 echo "Finish deploy $SERVICE_NAME...."
             }
