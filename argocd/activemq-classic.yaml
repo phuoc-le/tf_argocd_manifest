@@ -9,9 +9,9 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: helm-values/activemq-classic/chart
-    repoURL: https://github.com/phuoc-le/tf_argocd_manifest.git
-    targetRevision: HEAD
+    chart: activemq-classic
+    repoURL: registry-1.docker.io/phuoc
+    targetRevision: 2.0.0
     helm:
       parameters:
         - name: "image.repository"

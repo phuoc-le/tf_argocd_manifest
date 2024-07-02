@@ -108,11 +108,11 @@ persistence:
   storageClass: ""
   accessModes:
     - ReadWriteOnce
-  size: 2Gi
+  size: 1Gi
   annotations: {}
 
 environment: {}
 
 admin:
   username: "admin"
-  password: "123456"
+  password: "admin"
