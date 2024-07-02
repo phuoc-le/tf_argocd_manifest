@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: phuoc/strapi
   pullPolicy: IfNotPresent
-  tag: v1.0.8-dev
+  tag: latest
 
 imagePullSecrets: []
 nameOverride: ""

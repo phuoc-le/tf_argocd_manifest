@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    path: strapi-chart
-    repoURL: https://github.com/phuoc-le/tf_argocd_manifest.git
-    targetRevision: HEAD
+    chart: strapi
+    repoURL: registry-1.docker.io/phuoc
+    targetRevision: 1.0.0
     helm:
       parameters:
         - name: "image.repository"
