@@ -6,13 +6,15 @@ metadata:
 spec:
   project: default
   source:
-    path: redis-insight/chart
-    repoURL: https://github.com/phuoc-le/tf_argocd_manifest.git
-    targetRevision: HEAD
+    chart: redis-insight
+    repoURL: registry-1.docker.io/phuoc
+    targetRevision: 2.0.0
     helm:
       parameters:
-        - name: "ienvironment.RITRUSTEDORIGINS"
+        - name: "environment.RITRUSTEDORIGINS"
           value: "https://redis-insight.phucninh.pro"
+        - name: "persistence.enabled"
+          value: "true"
   destination:
     namespace: infra
     server: https://kubernetes.default.svc

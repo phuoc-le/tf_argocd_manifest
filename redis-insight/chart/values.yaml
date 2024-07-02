@@ -41,12 +41,19 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
-      paths: []
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+    - host: redis-insight.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: redis-insight
+              port:
+                number: 5540
+  tls:
+    - hosts:
+      - redis-insight.example.com
+      secretName: redis-insight-example-com-tls
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -54,20 +61,20 @@ resources: {}
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
 
-startupProbe: {}
-  #  httpGet:
-  #    path: /
-  #    port: http
+startupProbe:
+  httpGet:
+    path: /
+    port: http
 
-livenessProbe: {}
-#  httpGet:
-#    path: /
-#    port: http
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
 
-readinessProbe: {}
-#  httpGet:
-#    path: /
-#    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
 
 autoscaling:
   enabled: false
@@ -83,7 +90,7 @@ tolerations: []
 affinity: {}
 
 persistence:
-  enabled: true
+  enabled: false
   existingClaim: ""
   mountPath: /data
   storageClass: ""

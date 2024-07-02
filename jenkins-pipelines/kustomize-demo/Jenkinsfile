@@ -61,7 +61,7 @@ pipeline {
                 echo "Start deleting $SERVICE_NAME...."
                 script {
                     withKubeConfig([namespace: "$NAMESPACE"]) {
-                        sh 'cd kustomize/${SERVICE_NAME} && kustomize build overlays/${BUILD_ENV} | kubectl delete -f -'
+                        sh 'cd kustomize/${SERVICE_NAME} && kubectl delete -k overlays/${BUILD_ENV}'
                     }
                 }
                 echo "Finish deleting $SERVICE_NAME...."

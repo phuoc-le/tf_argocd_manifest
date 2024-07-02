@@ -90,5 +90,5 @@ spec:
             claimName: {{ .Values.persistence.existingClaim }}
         {{ else }}
         - name: db
-          emptyDir: { }
+          emptyDir: {}
         {{- end }}
