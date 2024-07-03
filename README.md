@@ -59,3 +59,13 @@ GRANT ALL PRIVILEGES ON `phucninh-blog`.* TO `superuser`@`%`
 FLUSH PRIVILEGES;
 
 ```
+
+Upload to helm docker registry
+```
+cd redis-insight && helm package chart
+
+helm push redis-insight-2.0.0.tgz oci://registry-1.docker.io/phuoc
+
+helm template redis-insight oci://registry-1.docker.io/phuoc/redis-insight --set persistence.enabled=true --version 2.0.0 -n infra
+
+```
