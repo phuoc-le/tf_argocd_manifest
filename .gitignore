@@ -39,3 +39,4 @@ terraform.rc
 /test
 
 */.vagrant/
+/test.txt
