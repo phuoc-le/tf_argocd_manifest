@@ -36,7 +36,7 @@ spec:
         - name: mariadb.enabled
           value: 'false'
         - name: externalDatabase.host
-          value: 'mariadb'
+          value: 'mariadb.infra'
         - name: externalDatabase.port
           value: '3306'
         - name: externalDatabase.user

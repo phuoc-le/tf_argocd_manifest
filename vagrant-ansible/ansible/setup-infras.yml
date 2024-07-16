@@ -56,6 +56,25 @@
         src: /tmp/longhorn-nfs-installation.yaml
         namespace: longhorn-system
 
+    - name: Create longhorn-nfs storage class
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          kind: StorageClass
+          apiVersion: storage.k8s.io/v1
+          metadata:
+            name: longhorn-nfs
+          provisioner: driver.longhorn.io
+          allowVolumeExpansion: true
+          reclaimPolicy: Delete
+          volumeBindingMode: Immediate
+          parameters:
+            numberOfReplicas: "3"
+            staleReplicaTimeout: "2880"
+            fromBackup: ""
+            fsType: "ext4"
+            nfsOptions: "vers=4.2,noresvport,softerr,timeo=600,retrans=5"
+
     - name: Add cert-manager chart repo
       kubernetes.core.helm_repository:
         repo_state: present
