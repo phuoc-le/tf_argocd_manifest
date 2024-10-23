@@ -1,13 +1,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: phucninh-ingress
-  namespace: infra
+  name: blog-phucninh-ingress
+  namespace: default
   annotations:
     cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
     cert-manager.io/duration: 999999h
     cert-manager.io/renew-before: 999h
-    cert-manager.io/common-name: '*.phucninh.pro'
+    cert-manager.io/common-name: 'blog.phucninh.pro'
     cert-manager.io/subject-organizations: 'PhucNinh .Inc'
     cert-manager.io/subject-organizationalunits: 'Technology Services'
     cert-manager.io/subject-countries: 'VN'
@@ -15,32 +15,19 @@ metadata:
     cert-manager.io/subject-postalcodes: '70000'
     nginx.ingress.kubernetes.io/ssl-redirect: 'true'
 spec:
-  ingressClassName: nginx
   tls:
     - hosts:
-        - jenkins.phucninh.pro
-      secretName: jenkins-phucninh-pro-tls
-    - hosts:
-        - vault.phucninh.pro
-      secretName: vault-phucninh-pro-tls
+        - blog.phucninh.pro
+      secretName: blog-phucninh-pro-tls
+  ingressClassName: nginx
   rules:
-    - host: jenkins.phucninh.pro
+    - host: blog.phucninh.pro
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: jenkins
+                name: phucninh-blog
                 port:
-                  number: 8080
-    - host: vault.phucninh.pro
-      http:
-        paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: vault
-                  port:
-                    number: 8200
+                  number: 80

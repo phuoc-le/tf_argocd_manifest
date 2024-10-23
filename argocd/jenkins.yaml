@@ -15,8 +15,8 @@ spec:
           image:
             tag: 2.480-jdk17
             pullPolicy: IfNotPresent
-          jenkinsAdminEmail: admin@phucninh.me
-          jenkinsUrl: https://jenkins.phucninh.me/
+          jenkinsAdminEmail: admin@phuocle.me
+          jenkinsUrl: https://jenkins.phuocle.me/
           admin:
             username: admin
             password: "123456"

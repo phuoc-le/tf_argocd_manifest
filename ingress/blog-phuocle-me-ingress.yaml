@@ -1,14 +1,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: phucninh-ingress
+  name: blog-phuocle-ingress
   namespace: default
   annotations:
     cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
     cert-manager.io/duration: 999999h
     cert-manager.io/renew-before: 999h
-    cert-manager.io/common-name: 'phucninh.pro'
-    cert-manager.io/subject-organizations: 'PhucNinh .Inc'
+    cert-manager.io/common-name: 'blog.phuocle.me'
+    cert-manager.io/subject-organizations: 'PhuocLe .Inc'
     cert-manager.io/subject-organizationalunits: 'Technology Services'
     cert-manager.io/subject-countries: 'VN'
     cert-manager.io/subject-localities: 'HCM City'
@@ -17,17 +17,17 @@ metadata:
 spec:
   tls:
     - hosts:
-        - phucninh.pro
-      secretName: phucninh-pro-tls
+        - blog.phuocle.me
+      secretName: blog-phuocle-me-tls
   ingressClassName: nginx
   rules:
-    - host: phucninh.pro
+    - host: blog.phuocle.me
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: phucninh-blog
+                name: phuocle-blog
                 port:
                   number: 80
