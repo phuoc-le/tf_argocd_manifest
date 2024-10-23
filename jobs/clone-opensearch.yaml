@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opensearch-clone-scripts
+  namespace: infra
+data:
+  clone_opensearch.sh: |-
+    #!/bin/bash
+    set -ex
+    services=(${INDEX_SERVICES})
+    index_year_month_list=(${INDEX_YEAR_MONTH})
+
+    for index_year_month in "${index_year_month_list[@]}"; do
+      for service in "${services[@]}"; do
+        echo "${service}-${index_year_month}"
+      done
+    done
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opensearch-clone-cronjob
+  namespace: infra
+data:
+  AWS_DEFAULT_REGION: ap-northeast-1
+  CONCURRENCY: '10'
+  DATA_PARAMS_OPTS: '--overwrite=false --ignore-errors --skip-existing'
+  INDEX_SERVICES: >-
+    service-master-common service-buyer-master-common
+    service-buyer-master-common-jrtc-demo service-buyer-order
+    service-buyer-order-jrtc-demo service-mail service-oauth service-search
+    service-report-center service-supplier service-schedule service-saml
+    service-proxy service-catalog-product service-file
+    service-supplier-master-common
+  INDEX_YEAR_MONTH: "2024.08 2024.09"
+  LIMIT: '10000'
+  OPENSEARCH_DESTINATION: http://opensearch-cluster.infra:9200
+  OPENSEARCH_SOURCE: http://opensearch-cluster.infra:9200
+  SCHEMA_PARAMS_OPTS: '--overwrite=false --ignore-errors --skip-existing'
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: opensearch-clone-cronjob
+  namespace: infra
+data:
+  AWS_ACCESS_KEY_ID: QUtJQVlHN1BLSjMyM1kzS1ZIR1E=
+  AWS_SECRET_ACCESS_KEY: aW5TcGFlWDFQc3lKMC9jTUN1S0hEZ0NoeGlZd1BDVWhtc3NkbHU3Ng==
+type: Opaque
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: opensearch-clone-cronjob
+  namespace: infra
+spec:
+  schedule: 00 00 1 * *
+  startingDeadlineSeconds: 120
+  concurrencyPolicy: Allow
+  suspend: true
+  jobTemplate:
+    metadata:
+      namespace: infra
+      creationTimestamp: null
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          volumes:
+            - name: opensearch-clone
+              configMap:
+                name: opensearch-clone-scripts
+                defaultMode: 493
+          containers:
+            - name: opensearch-clone-cronjob
+              image: phuoc/opensearch-clone:v1.0.0
+              command:
+                - /bin/bash
+                - '-c'
+                - /opt/scripts/clone_opensearch.sh
+              envFrom:
+                - configMapRef:
+                    name: opensearch-clone-cronjob
+                - secretRef:
+                    name: opensearch-clone-cronjob
+              resources: {}
+              volumeMounts:
+                - name: opensearch-clone
+                  mountPath: /opt/scripts/clone_opensearch.sh
+                  subPath: clone_opensearch.sh
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: IfNotPresent
+          restartPolicy: OnFailure
+          terminationGracePeriodSeconds: 120
+          dnsPolicy: ClusterFirst
+          securityContext: {}
+          schedulerName: default-scheduler
+      ttlSecondsAfterFinished: 100
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 2

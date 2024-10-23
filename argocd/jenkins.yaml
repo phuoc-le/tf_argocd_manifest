@@ -13,7 +13,7 @@ spec:
       valuesObject:
         controller:
           image:
-            tag: latest-jdk17
+            tag: 2.480-jdk17
             pullPolicy: IfNotPresent
           jenkinsAdminEmail: admin@phucninh.me
           jenkinsUrl: https://jenkins.phucninh.me/
@@ -21,13 +21,12 @@ spec:
             username: admin
             password: "123456"
           installPlugins:
-            - kubernetes:4246.v5a_12b_1fe120e
-            - workflow-aggregator:596.v8c21c963d92d
+            - kubernetes:4290.v93ea_4b_b_26a_61
+            - workflow-aggregator:600.vb_57cdd26fdd7
             - git:5.2.2
-            - configuration-as-code:1810.v9b_c30a_249a_4c
+            - configuration-as-code:1850.va_a_8c31d3158b_
             - kubernetes-cli:1.12.1
-            - hashicorp-vault-plugin:368.v48134f694db_f
-            - hashicorp-vault-pipeline:1.4
+            - hashicorp-vault-plugin:370.v946b_53544a_30
         persistence:
           size: 2Gi
         agent:

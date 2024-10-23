@@ -1,0 +1,73 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: phuocle-ingress
+  namespace: infra
+  annotations:
+    cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
+    cert-manager.io/duration: 999999h
+    cert-manager.io/renew-before: 999h
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - jenkins.phuocle.me
+      secretName: jenkins-phuocle-me-tls
+    - hosts:
+        - activemq.phuocle.me
+      secretName: activemq-phuocle-me-tls
+    - hosts:
+        - vault.phuocle.me
+      secretName: vault-phuocle-me-tls
+  rules:
+    - host: jenkins.phuocle.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jenkins
+                port:
+                  number: 8080
+    - host: activemq.phuocle.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: activemq
+                port:
+                  number: 8161
+    - host: vault.phuocle.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vault
+                port:
+                  number: 8200
+    - host: opensearch.phuocle.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: opensearch
+                port:
+                  number: 9200
+    - host: opensearch-dashboards.phuocle.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: opensearch-dashboards
+                port:
+                  number: 5601

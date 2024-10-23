@@ -1,27 +1,24 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: phucninh-ingress
+  name: phuocle-ingress
   namespace: default
   annotations:
     cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
-    cert-manager.io/duration: 876000h
-    cert-manager.io/renew-before: 744h
+    cert-manager.io/duration: 999999h
+    cert-manager.io/renew-before: 999h
     nginx.ingress.kubernetes.io/ssl-redirect: 'true'
 spec:
-  ingressClassName: nginx
   tls:
     - hosts:
-        - dev.phucninh.pro
-      secretName: dev-phucninh-pro-tls
+        - api.phuocle.me
+      secretName: api-phuocle-me-tls
     - hosts:
-        - blog.phucninh.pro
-      secretName: blog-phucninh-pro-tls
-    - hosts:
-        - api.phucninh.pro
-      secretName: api-phucninh-pro-tls
+        - blog.phuocle.me
+      secretName: blog-phuocle-me-tls
+  ingressClassName: nginx
   rules:
-    - host: dev.phucninh.pro
+    - host: dev.phuocle.me
       http:
         paths:
           - path: /
@@ -31,23 +28,23 @@ spec:
                 name: nginx
                 port:
                   number: 80
-    - host: api.phucninh.pro
-      http:
-        paths:
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: strapi-service
-                port:
-                  number: 1337
-    - host: blog.phucninh.pro
+    - host: api.phuocle.me
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: phucninh-blog
+                name: strapi
+                port:
+                  number: 1337
+    - host: blog.phuocle.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: phuocle-blog
                 port:
                   number: 80

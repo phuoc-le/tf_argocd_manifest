@@ -169,7 +169,7 @@ global:
       # This role must be bound the `partition-init` job's service account.
       # To discover the service account name of the `partition-init` job, run with Helm values for the client cluster:
       # ```shell-session
-      # $ helm template --show-only templates/partition-init-serviceaccount.yaml -f client-cluster-values.yaml <release-name> hashicorp/consul
+      # $ helm template --show-only templates/partition-init-serviceaccount.yaml -f client-cluster-opensearch.values.yaml <release-name> hashicorp/consul
       # ```
       # and check the name of `metadata.name`.
       adminPartitionsRole: ""

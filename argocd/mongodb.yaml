@@ -15,6 +15,8 @@ spec:
           value: "mongodb"
         - name: "image.tag"
           value: '7.0.9'
+        - name: "auth.enabled"
+          value: "true"
         - name: "auth.rootPassword"
           value: "123456"
           forceString: true
@@ -28,7 +30,13 @@ spec:
         - name: "persistence.size"
           value: "1Gi"
         - name: "service.type"
-          value: "ClusterIP"
+          value: "LoadBalancer"
+        - name: "extraEnvVars[0].name"
+          value: "EXPERIMENTAL_DOCKER_DESKTOP_FORCE_QEMU"
+        - name: "extraEnvVars[0].value"
+          value: "1"
+          forceString: true
+
   destination:
     server: https://kubernetes.default.svc
     namespace: infra

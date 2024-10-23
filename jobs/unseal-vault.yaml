@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: unseal-vault-sa
+  namespace: infra
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: unseal-vault-sa-binding
+subjects:
+  - kind: ServiceAccount
+    name: unseal-vault-sa
+    namespace: infra
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: unseal-vault
+  namespace: infra
+data:
+  NAMESPACE: aW5mcmE=
+  SERVICE: dmF1bHQ=
+  VAULT_KEY_1: WE1XSkU3SXJVeWdiWUozKy9vSHZIQlZwTUN0U0NmMW4vbkVlK0xLOFdKQU0=
+  VAULT_KEY_2: c21Ec2U2ZnN4NWJTNmZaNGtDRUhnWG56Q2FvcFozcVVUYTl4THNsUjM4Rmc=
+  VAULT_KEY_3: SnFvZmNlYWtnaHViWmY1UDc1U1daMGhsOVhkNFp1WXJtWmZZWU5zU0pGbS8=
+type: Opaque
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: unseal-vault-cronjob
+  namespace: infra
+spec:
+  schedule: "1 1 1 1 *"
+  startingDeadlineSeconds: 120
+  concurrencyPolicy: Allow
+  suspend: true
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: unseal-vault-sa
+          containers:
+            - name: unseal-vault-job
+              image: bitnami/kubectl:latest
+              imagePullPolicy: IfNotPresent
+              command: ["/bin/sh", "-c"]
+              args:
+                - kubectl exec -i ${SERVICE}-0 -n $NAMESPACE -- vault operator unseal $VAULT_KEY_1 && kubectl exec -i ${SERVICE}-0 -n $NAMESPACE -- vault operator unseal $VAULT_KEY_2 && kubectl exec -i ${SERVICE}-0 -n $NAMESPACE -- vault operator unseal $VAULT_KEY_3;
+              envFrom:
+                - secretRef:
+                    name: unseal-vault
+          restartPolicy: Never
+          terminationGracePeriodSeconds: 120

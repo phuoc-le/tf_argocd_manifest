@@ -24,3 +24,13 @@ sudo apt install net-tools -y
 kubectl label node kubeadm-worker-1 node-role.kubernetes.io/worker=""
 kubectl label node kubeadm-worker-2 node-role.kubernetes.io/worker=""
 kubectl label node kubeadm-worker-3 node-role.kubernetes.io/worker=""
+
+
+Using NGINX ingress, send --insecure arg for container of argocd-server Deployment. It works for me.
+
+spec:
+  containers:
+      - name: argocd-server
+        args:
+          - /usr/local/bin/argocd-server
+          - '--insecure'

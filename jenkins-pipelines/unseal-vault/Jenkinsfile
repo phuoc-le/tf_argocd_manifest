@@ -4,9 +4,9 @@ pipeline {
     parameters {
         string(name: 'SERVICE', defaultValue: 'vault', description: '', trim: true)
         string(name: 'NAMESPACE', defaultValue: 'infra', description: '', trim: true)
-        string(name: 'VAULT_KEY_1', defaultValue: 'xOVWr4OtVw4IPewgn/4ilP1ASjtoIGQh9q5vLsca/Axt', description: '', trim: true)
-        string(name: 'VAULT_KEY_2', defaultValue: '0M7rKcqXk5BijyRL+ro3ACarj+I9yZLV3kFZsCVFnW8Y', description: '', trim: true)
-        string(name: 'VAULT_KEY_3', defaultValue: 'DYXGLa6BGCU87F+IAhDFrOmfl+qfBUCnLF+rxoGvpgKE', description: '', trim: true)
+        string(name: 'VAULT_KEY_1', defaultValue: 'XMWJE7IrUygbYJ3+/oHvHBVpMCtSCf1n/nEe+LK8WJAM', description: '', trim: true)
+        string(name: 'VAULT_KEY_2', defaultValue: 'smDse6fsx5bS6fZ4kCEHgXnzCaopZ3qUTa9xLslR38Fg', description: '', trim: true)
+        string(name: 'VAULT_KEY_3', defaultValue: 'JqofceakghubZf5P75SWZ0hl9Xd4ZuYrmZfYYNsSJFm/', description: '', trim: true)
     }
     options {
         buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '5'))
@@ -27,9 +27,9 @@ pipeline {
                 script {
                     withKubeConfig([namespace: "$NAMESPACE"]) {
                       sh '''
-                        kubectl exec -it ${SERVICE}-0 -n $NAMESPACE -- vault operator unseal $VAULT_KEY_1
-                        kubectl exec -it ${SERVICE}-0 -n $NAMESPACE -- vault operator unseal $VAULT_KEY_2
-                        kubectl exec -it ${SERVICE}-0 -n $NAMESPACE -- vault operator unseal $VAULT_KEY_3
+                        kubectl exec -i ${SERVICE}-0 -n $NAMESPACE -- vault operator unseal $VAULT_KEY_1
+                        kubectl exec -i ${SERVICE}-0 -n $NAMESPACE -- vault operator unseal $VAULT_KEY_2
+                        kubectl exec -i ${SERVICE}-0 -n $NAMESPACE -- vault operator unseal $VAULT_KEY_3
                       '''
                     }
                 }

@@ -12,10 +12,8 @@ spec:
       parameters:
         - name: fullnameOverride
           value: 'phuocle-blog'
-        - name: global.storageClass
-          value: 'longhorn-nfs'
         - name: image.tag
-          value: '6.5.5'
+          value: '6.6.0'
         - name: wordpressUsername
           value: 'admin'
         - name: wordpressEmail
@@ -31,8 +29,8 @@ spec:
           forceString: true
         - name: service.type
           value: 'ClusterIP'
-        - name: persistence.existingClaim
-          value: 'phuocle-blog'
+        - name: persistence.size
+          value: '2Gi'
         - name: mariadb.enabled
           value: 'false'
         - name: externalDatabase.host
@@ -50,3 +48,9 @@ spec:
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true

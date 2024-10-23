@@ -27,13 +27,15 @@ spec:
           value: "test"
         - name: "primary.persistence.size"
           value: 1Gi
-        - name: "readReplicas.persistence.size"
-          value: 1Gi
+        - name: "primary.service.type"
+          value: "LoadBalancer"
       valuesObject:
         initdbScripts:
           init.sql: |
             CREATE USER app identified by '123456';
-            CREATE DATABASE `phucninh-blog`;
+            CREATE DATABASE `phuocle-blog`;
+            GRANT ALL PRIVILEGES ON `phuocle-blog`.* TO 'app'@'%';
+            CREATE DATABASE `phuocle-blog`;
             GRANT ALL PRIVILEGES ON `phucninh-blog`.* TO 'app'@'%';
             CREATE DATABASE `strapi`;
             GRANT ALL PRIVILEGES ON `strapi`.* TO 'app'@'%';
