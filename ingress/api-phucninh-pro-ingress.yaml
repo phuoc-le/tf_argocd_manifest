@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-phucninh-ingress
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
+    cert-manager.io/duration: 999999h
+    cert-manager.io/renew-before: 999h
+    cert-manager.io/common-name: 'api.phucninh.pro'
+    cert-manager.io/subject-organizations: 'PhucNinh .Inc'
+    cert-manager.io/subject-organizationalunits: 'Technology Services'
+    cert-manager.io/subject-countries: 'VN'
+    cert-manager.io/subject-localities: 'HCM City'
+    cert-manager.io/subject-postalcodes: '70000'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+spec:
+  tls:
+    - hosts:
+        - api.phucninh.pro
+      secretName: api-phucninh-pro-tls
+  ingressClassName: nginx
+  rules:
+    - host: api.phucninh.pro
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: strapi
+                port:
+                  number: 1337

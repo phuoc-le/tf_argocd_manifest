@@ -35,7 +35,7 @@ spec:
             CREATE USER app identified by '123456';
             CREATE DATABASE `phuocle-blog`;
             GRANT ALL PRIVILEGES ON `phuocle-blog`.* TO 'app'@'%';
-            CREATE DATABASE `phuocle-blog`;
+            CREATE DATABASE `phucninh-blog`;
             GRANT ALL PRIVILEGES ON `phucninh-blog`.* TO 'app'@'%';
             CREATE DATABASE `strapi`;
             GRANT ALL PRIVILEGES ON `strapi`.* TO 'app'@'%';

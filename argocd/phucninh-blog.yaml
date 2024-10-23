@@ -20,7 +20,7 @@ spec:
           value: '123456'
           forceString: true
         - name: wordpressEmail
-          value: 'admin@phucninh.me'
+          value: 'admin@phucninh.pro'
         - name: wordpressFirstName
           value: 'Phuc'
         - name: wordpressLastName
